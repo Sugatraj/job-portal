@@ -30,128 +30,100 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
 
-  const handleLogout = () => {
-    logout();
-  };
-
-  const adminNavItems = [
+  const adminMenuItems = [
     {
       title: 'Dashboard',
-      href: ROUTES.admin.dashboard,
+      url: ROUTES.admin.dashboard,
       icon: Home,
-      description: 'Admin overview',
     },
     {
       title: 'Candidates',
-      href: ROUTES.admin.candidates,
+      url: ROUTES.admin.candidates,
       icon: Users,
-      description: 'Manage candidates',
     },
     {
       title: 'Jobs',
-      href: ROUTES.admin.jobs,
+      url: ROUTES.admin.jobs,
       icon: Briefcase,
-      description: 'Manage job postings',
-    },
-    {
-      title: 'Company',
-      href: '/admin/company',
-      icon: Building2,
-      description: 'Company settings',
     },
   ];
 
-  const userNavItems = [
+  const userMenuItems = [
     {
       title: 'Dashboard',
-      href: ROUTES.user.dashboard,
+      url: ROUTES.user.dashboard,
       icon: Home,
-      description: 'User overview',
-    },
-    {
-      title: 'Browse Jobs',
-      href: ROUTES.user.jobs,
-      icon: Briefcase,
-      description: 'Find job opportunities',
     },
     {
       title: 'My Profile',
-      href: ROUTES.user.profile,
+      url: ROUTES.user.profile,
       icon: User,
-      description: 'Profile information',
     },
     {
-      title: 'Applications',
-      href: '/user/applications',
+      title: 'Applied Jobs',
+      url: ROUTES.user.appliedJobs,
       icon: FileText,
-      description: 'My job applications',
     },
   ];
 
-  const navItems = user?.role === 'admin' ? adminNavItems : userNavItems;
+  const menuItems = user?.role === 'admin' ? adminMenuItems : userMenuItems;
 
   return (
-    <Sidebar className="dark:bg-gray-900 dark:border-gray-700">
-      <SidebarHeader className="dark:bg-gray-900">
-        <div className="flex items-center space-x-2 px-4 py-2">
-          <Building2 className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-lg dark:text-white">Job Portal</span>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
+        <div className="flex items-center gap-2">
+          <Building2 className="h-6 w-6" />
+          <span className="font-semibold group-data-[collapsible=icon]:hidden">
+            Job Portal
+          </span>
         </div>
       </SidebarHeader>
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>User Info</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <div className="flex items-center space-x-3 px-4 py-2">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.name}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  {user?.role} • {user?.type}
-                </p>
-              </div>
-            </div>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.href}>
-                        <Icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <Link href={item.url}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} className="text-red-600 hover:text-red-700 hover:bg-red-50">
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <div className="space-y-3">{/* Action Buttons Section - Always visible */}
+          {/* Rewritten to match @file_context_0 */}
+          <div className="flex flex-col gap-2">
+            {/* Profile Link */}
+            <Link 
+              href={ROUTES.user.profile}
+              className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
+              title="My Profile"
+            >
+              <User className="h-4 w-4 flex-shrink-0" />
+              <span className="group-data-[collapsible=icon]:hidden">Profile</span>
+            </Link>
+            
+            {/* Logout Button */}
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded-md transition-colors text-red-600 hover:text-red-700 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4 flex-shrink-0" />
+              <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+            </button>
+          </div>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

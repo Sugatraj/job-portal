@@ -12,8 +12,9 @@ export const APP_CONFIG = {
     },
     user: {
       dashboard: '/user',
-      jobs: '/user/jobs',
       profile: '/user/profile',
+      jobs: '/user/jobs',
+      appliedJobs: '/user/applied-jobs',
     },
   } as const;
 
