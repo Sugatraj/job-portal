@@ -120,3 +120,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Ensure full width layout */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Force full width on main containers */
+#__next, [data-nextjs-page] {
+  width: 100%;
+}

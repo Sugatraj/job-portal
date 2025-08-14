@@ -1,3 +1,4 @@
+// frontend/src/components/layout/AppLayout.tsx
 'use client';
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -10,17 +11,23 @@ interface AppLayoutProps {
 export const AppLayout = ({ children }: AppLayoutProps) => {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1">
-          <div className="flex items-center gap-2 p-4 border-b">
-            <SidebarTrigger />
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Custom Header - Better than SidebarTrigger inside main */}
+          <header className="flex items-center gap-2 p-4 border-b bg-white shadow-sm">
+            <SidebarTrigger className="md:hidden" />
             <h1 className="text-lg font-semibold">Job Portal</h1>
-          </div>
-          <div className="p-6">
+            <div className="ml-auto">
+              {/* Add any header actions here */}
+            </div>
+          </header>
+          
+          {/* Main Content Area */}
+          <main className="flex-1 p-6 bg-gray-50 overflow-auto">
             {children}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </SidebarProvider>
   );
