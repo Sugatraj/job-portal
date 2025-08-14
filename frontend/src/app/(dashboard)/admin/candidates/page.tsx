@@ -3,12 +3,13 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { ROUTES } from '@/lib/constants';
 import { 
   Users, 
@@ -26,7 +27,9 @@ import {
   ArrowRight,
   Eye,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  EyeOff,
+  FileText
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -145,6 +148,17 @@ export default function CandidatesPage() {
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [visibleColumns, setVisibleColumns] = useState({
+    candidate: true,
+    position: true,
+    status: true,
+    priority: true,
+    experience: true,
+    location: true,
+    appliedDate: true
+  });
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -181,6 +195,12 @@ export default function CandidatesPage() {
     return 0;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedCandidates.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedCandidates = sortedCandidates.slice(startIndex, endIndex);
+
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -192,7 +212,7 @@ export default function CandidatesPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedCandidates(filteredCandidates.map(c => c.id));
+      setSelectedCandidates(paginatedCandidates.map(c => c.id));
     } else {
       setSelectedCandidates([]);
     }
@@ -204,6 +224,13 @@ export default function CandidatesPage() {
     } else {
       setSelectedCandidates(prev => prev.filter(id => id !== candidateId));
     }
+  };
+
+  const toggleColumn = (column: string) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [column]: !prev[column as keyof typeof prev]
+    }));
   };
 
   const getStatusIcon = (status: string) => {
@@ -297,78 +324,246 @@ export default function CandidatesPage() {
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox 
-                    checked={selectedCandidates.length === filteredCandidates.length && filteredCandidates.length > 0}
+                    checked={selectedCandidates.length === paginatedCandidates.length && paginatedCandidates.length > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('id')}
-                >
-                  <div className="flex items-center gap-2">
-                    Candidate
-                    {getSortIcon('id')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('position')}
-                >
-                  <div className="flex items-center gap-2">
-                    Position
-                    {getSortIcon('position')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('status')}
-                >
-                  <div className="flex items-center gap-2">
-                    Status
-                    {getSortIcon('status')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('priority')}
-                >
-                  <div className="flex items-center gap-2">
-                    Priority
-                    {getSortIcon('priority')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('experience')}
-                >
-                  <div className="flex items-center gap-2">
-                    Experience
-                    {getSortIcon('experience')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('location')}
-                >
-                  <div className="flex items-center gap-2">
-                    Location
-                    {getSortIcon('location')}
-                  </div>
-                </TableHead>
-                <TableHead 
-                  className="cursor-pointer"
-                  onClick={() => handleSort('appliedDate')}
-                >
-                  <div className="flex items-center gap-2">
-                    Applied Date
-                    {getSortIcon('appliedDate')}
-                  </div>
-                </TableHead>
+                {visibleColumns.candidate && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Candidate
+                            {getSortIcon('id')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('id')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('id')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('candidate')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.position && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Position
+                            {getSortIcon('position')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('position')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('position')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('position')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.status && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Status
+                            {getSortIcon('status')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('status')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('status')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('status')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.priority && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Priority
+                            {getSortIcon('priority')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('priority')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('priority')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('priority')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.experience && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Experience
+                            {getSortIcon('experience')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('experience')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('experience')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('experience')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.location && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Location
+                            {getSortIcon('location')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('location')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('location')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('location')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
+                {visibleColumns.appliedDate && (
+                  <TableHead>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 p-0 hover:bg-transparent">
+                          <div className="flex items-center gap-2">
+                            Applied Date
+                            {getSortIcon('appliedDate')}
+                          </div>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleSort('appliedDate')}>
+                          <ChevronUp className="mr-2 h-4 w-4" />
+                          Asc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort('appliedDate')}>
+                          <ChevronDown className="mr-2 h-4 w-4" />
+                          Desc
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleColumn('appliedDate')}>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Documentation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableHead>
+                )}
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedCandidates.map((candidate) => (
+              {paginatedCandidates.map((candidate) => (
                 <TableRow key={candidate.id}>
                   <TableCell>
                     <Checkbox 
@@ -376,31 +571,50 @@ export default function CandidatesPage() {
                       onCheckedChange={(checked) => handleSelectCandidate(candidate.id, checked as boolean)}
                     />
                   </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="font-medium">{candidate.id}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="text-sm">{candidate.position}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(candidate.status)}
-                      <span className="font-medium">{candidate.status}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getPriorityIcon(candidate.priority)}
-                      <span className="font-medium">{candidate.priority}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{candidate.experience}</TableCell>
-                  <TableCell>{candidate.location}</TableCell>
-                  <TableCell>{candidate.appliedDate}</TableCell>
+                  {visibleColumns.candidate && (
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="font-medium">{candidate.id}</div>
+                        <div className="text-sm text-muted-foreground">{candidate.name}</div>
+                        <div className="text-sm text-muted-foreground">{candidate.email}</div>
+                      </div>
+                    </TableCell>
+                  )}
+                  {visibleColumns.position && (
+                    <TableCell>
+                      <div className="space-y-1">
+                        <Badge variant="secondary" className="w-fit">
+                          {candidate.position.split(' ')[0]}
+                        </Badge>
+                        <div className="text-sm">{candidate.position}</div>
+                      </div>
+                    </TableCell>
+                  )}
+                  {visibleColumns.status && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(candidate.status)}
+                        <span className="font-medium">{candidate.status}</span>
+                      </div>
+                    </TableCell>
+                  )}
+                  {visibleColumns.priority && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getPriorityIcon(candidate.priority)}
+                        <span className="font-medium">{candidate.priority}</span>
+                      </div>
+                    </TableCell>
+                  )}
+                  {visibleColumns.experience && (
+                    <TableCell>{candidate.experience}</TableCell>
+                  )}
+                  {visibleColumns.location && (
+                    <TableCell>{candidate.location}</TableCell>
+                  )}
+                  {visibleColumns.appliedDate && (
+                    <TableCell>{candidate.appliedDate}</TableCell>
+                  )}
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -434,13 +648,70 @@ export default function CandidatesPage() {
             </TableBody>
           </Table>
           
-          {sortedCandidates.length === 0 && (
+          {paginatedCandidates.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               No candidates found matching your criteria.
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Bottom Pagination - Exact match to tasks example */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          {selectedCandidates.length} of {sortedCandidates.length} row(s) selected.
+        </div>
+        
+        <div className="flex items-center space-x-6 lg:space-x-8">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm font-medium">Rows per page</p>
+            <Select value={rowsPerPage.toString()} onValueChange={(value) => setRowsPerPage(Number(value))}>
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            Page {currentPage} of {totalPages}
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(1)}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(totalPages)}
+                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </div>
     </div>
   );
 }
