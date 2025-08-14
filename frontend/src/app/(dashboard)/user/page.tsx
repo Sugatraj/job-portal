@@ -2,72 +2,134 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
+import { Users, Briefcase, User, FileText } from 'lucide-react';
+import { Loading, LoadingCard } from '@/components/ui/loading';
 
 export default function UserDashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!user || user.role !== 'user') {
       router.push(ROUTES.login);
+      return;
     }
+    
+    // Simulate loading time for better UX
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
   }, [user, router]);
 
   if (!user || user.role !== 'user') {
     return null;
   }
 
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="h-9 bg-muted rounded w-64 animate-pulse" />
+            <div className="h-5 bg-muted rounded w-48 animate-pulse mt-2" />
+          </div>
+        </div>
+        <div className="p-6 border rounded-lg">
+          <LoadingCard />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="p-6 border rounded-lg">
+              <LoadingCard />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">User Dashboard</h1>
-        <Button onClick={logout} variant="outline">
-          Logout
-        </Button>
+    <div className="space-y-8 w-full max-w-none">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">User Dashboard</h1>
+          <p className="text-muted-foreground mt-2">Welcome back, {user.name}! 👋</p>
+        </div>
       </div>
 
-      <Card>
+      {/* User Info Card */}
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>Welcome, {user.name}! 👋</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            <span>Account Information</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground mb-4">
             You are logged in as a <strong>User</strong>.
           </p>
-          <div className="mt-4 space-y-2">
-            <p><strong>Role:</strong> {user.role}</p>
-            <p><strong>Type:</strong> {user.type}</p>
-            <p><strong>Mobile:</strong> {user.mobile}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Role</p>
+              <p className="text-sm">{user.role}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Type</p>
+              <p className="text-sm">{user.type}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Mobile</p>
+              <p className="text-sm">{user.mobile}</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <Card>
           <CardHeader>
-            <CardTitle>Browse Jobs</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5" />
+              <span>Browse Jobs</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               View and apply for available job postings.
             </p>
-            <Button>View Jobs</Button>
+            <Button 
+              className="w-full"
+              onClick={() => router.push(ROUTES.user.jobs)}
+            >
+              View Jobs
+            </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>My Profile</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              <span>My Profile</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               View and edit your profile information.
             </p>
-            <Button>View Profile</Button>
+            <Button 
+              className="w-full"
+              onClick={() => router.push(ROUTES.user.profile)}
+            >
+              View Profile
+            </Button>
           </CardContent>
         </Card>
       </div>

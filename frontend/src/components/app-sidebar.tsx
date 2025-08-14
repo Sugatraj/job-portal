@@ -11,7 +11,6 @@ import {
   Home,
   Building2,
   FileText,
-  LogOut,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -100,28 +99,11 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter className="border-t border-sidebar-border p-4">
-        <div className="space-y-3">{/* Action Buttons Section - Always visible */}
-          {/* Rewritten to match @file_context_0 */}
-          <div className="flex flex-col gap-2">
-            {/* Profile Link */}
-            <Link 
-              href={ROUTES.user.profile}
-              className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
-              title="My Profile"
-            >
-              <User className="h-4 w-4 flex-shrink-0" />
-              <span className="group-data-[collapsible=icon]:hidden">Profile</span>
-            </Link>
-            
-            {/* Logout Button */}
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded-md transition-colors text-red-600 hover:text-red-700 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4 flex-shrink-0" />
-              <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-            </button>
+        <div className="space-y-3">
+          {/* User Info Section - Only show when expanded */}
+          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <User className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm">{user?.name}</span>
           </div>
         </div>
       </SidebarFooter>

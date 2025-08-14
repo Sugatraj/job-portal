@@ -3,25 +3,24 @@
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
-import { ModeToggle } from '@/components/mode-toggle';
+import { AppHeader } from '@/components/app-header';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-export const AppLayout = ({ children }: AppLayoutProps) => {
+export function AppLayout({ children }: AppLayoutProps) {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <main className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 p-4 border-b border-border">
-          <SidebarTrigger />
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+      <div className="flex h-screen w-full">
+        <AppSidebar />
+        <div className="flex flex-1 flex-col min-w-0 w-full">
+          <AppHeader />
+          <main className="flex-1 min-w-0 w-full overflow-auto p-6 max-w-none">
+            {children}
+          </main>
         </div>
-        <div className="p-4 w-full">
-          {children}
-        </div>
-      </main>
+      </div>
     </SidebarProvider>
   );
-};
+}
