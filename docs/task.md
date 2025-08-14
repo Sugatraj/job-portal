@@ -31,3 +31,15 @@ we should follow the react best practices like making reusbale components, makei
 we should maintain clean UI/UX that should be scalable project architecure dicisions, mobile first approch with tailwindcss 
 we should always think to making reusable components
 we should follow the AppLayout and children rendering logic so unnecessary rerenders will not happens 
+
+we should use shadcn to maintain the UI
+we should make an constant file where most of used constant will be used 
+we should make an .ENV for development and production
+use packages which make coding job easy like for dates we should use dayjs instead of writing the logic again and again
+resuable logic should be made in constat like file so it act as single source of truth
+
+make the tanstack implementation as 
+    queryClient : here we declear all the config like staleTime, cahceTime
+    queryKeys : here we store all the keys and act as single source of truth
+
+admin logic and user login should not be see each other we have to make sure we authenticate the user and if wrong user trying to open routes of each others that time we should make clear the localhost or where authentication stored and navigate to login screen!
