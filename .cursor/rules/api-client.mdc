@@ -1,0 +1,90 @@
+# API Client Rules
+
+## Axios Instance Configuration
+We should make an Axios API instance or a single source of API registration.
+
+```typescript
+// lib/api/client.ts
+import axios from 'axios';
+import { APP_CONFIG } from '../constants';
+
+export const apiClient = axios.create({
+  baseURL: APP_CONFIG.apiUrl,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor for authentication
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth-token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login
+      localStorage.removeItem('auth-token');
+      window.location.href = '/login?error=unauthorized';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+## API Endpoints
+```typescript
+// lib/api/endpoints.ts
+export const API_ENDPOINTS = {
+  auth: {
+    login: '/auth/login',
+    logout: '/auth/logout',
+    refresh: '/auth/refresh',
+  },
+  admin: {
+    candidates: '/admin/candidates',
+    jobs: '/admin/jobs',
+  },
+  user: {
+    jobs: '/user/jobs',
+    profile: '/user/profile',
+  },
+} as const;
+
+// lib/api/services/auth.ts
+export const authService = {
+  login: (credentials: LoginCredentials) => 
+    apiClient.post(API_ENDPOINTS.auth.login, credentials),
+  
+  logout: () => 
+    apiClient.post(API_ENDPOINTS.auth.logout),
+  
+  refresh: () => 
+    apiClient.post(API_ENDPOINTS.auth.refresh),
+};
+```
+
+## Error Handling
+- Implement proper error handling for all API calls
+- Handle authentication errors (401) by redirecting to login
+- Show user-friendly error messages
+- Log errors for debugging purposes
+- Implement retry logic for failed requests
+
+## Best Practices
+- Use centralized API client configuration
+- Implement proper request/response interceptors
+- Handle authentication tokens automatically
+- Use consistent error handling patterns
+- Implement proper timeout and retry configurations
+description:
+globs:
+alwaysApply: false
+---

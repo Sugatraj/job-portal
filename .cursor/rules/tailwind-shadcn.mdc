@@ -1,0 +1,72 @@
+# Tailwind CSS & shadcn/ui Rules
+
+## shadcn/ui Integration
+- Use shadcn/ui components as base UI elements
+- Extend shadcn/ui components when needed
+- Maintain consistent styling with Tailwind CSS
+- Follow shadcn/ui component patterns
+- Install and configure shadcn/ui properly
+
+## Tailwind CSS Guidelines
+- Use mobile-first approach: start with mobile styles, then add responsive variants
+- Create consistent spacing using Tailwind's spacing scale
+- Use semantic color names from a custom color palette
+- Implement dark mode support with `dark:` prefix
+- Create reusable component classes in globals.css
+- Use arbitrary values sparingly: `w-[200px]` only when necessary
+
+## Class Organization
+Follow this order for consistent class organization:
+1. Layout (display, position, top, right, bottom, left)
+2. Box Model (width, height, margin, padding)
+3. Typography (font, text, line-height)
+4. Visual (background, border, shadow)
+5. Interactive (hover, focus, active)
+
+## Component Examples
+```typescript
+// Extending shadcn/ui components
+import { Button as BaseButton } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+interface ButtonProps extends React.ComponentProps<typeof BaseButton> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'destructive';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export const Button = React.memo(({ 
+  variant = 'primary', 
+  size = 'md', 
+  className, 
+  children, 
+  ...props 
+}: ButtonProps) => {
+  return (
+    <BaseButton
+      variant={variant}
+      size={size}
+      className={cn(
+        variant === 'primary' && 'bg-blue-600 hover:bg-blue-700',
+        variant === 'secondary' && 'bg-gray-600 hover:bg-gray-700',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </BaseButton>
+  );
+});
+
+// Responsive design example
+<div className="
+  flex flex-col space-y-4 
+  sm:flex-row sm:space-y-0 sm:space-x-4 
+  md:space-x-6 
+  lg:space-x-8
+">
+  {/* Content */}
+</div>
+description:
+globs:
+alwaysApply: false
+---

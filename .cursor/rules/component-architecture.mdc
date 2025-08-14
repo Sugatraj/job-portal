@@ -1,0 +1,101 @@
+# Component Architecture Rules
+
+## Reusable Components
+We should always think to making reusable components. We should follow the AppLayout and children rendering logic so unnecessary rerenders will not happen.
+
+## Component Structure
+```typescript
+// components/layout/AppLayout.tsx
+interface AppLayoutProps {
+  children: React.ReactNode;
+  sidebar?: React.ReactNode;
+  header?: React.ReactNode;
+}
+
+export const AppLayout = ({ children, sidebar, header }: AppLayoutProps) => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {header && (
+        <header className="bg-white shadow-sm border-b">
+          {header}
+        </header>
+      )}
+      <div className="flex">
+        {sidebar && (
+          <aside className="w-64 bg-white shadow-lg min-h-screen">
+            {sidebar}
+          </aside>
+        )}
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+```
+
+## Form Components
+```typescript
+// components/forms/Input.tsx
+interface InputProps {
+  label: string;
+  name: string;
+  type?: 'text' | 'email' | 'password' | 'number';
+  placeholder?: string;
+  error?: string;
+  required?: boolean;
+  className?: string;
+}
+
+export const Input = ({ 
+  label, 
+  name, 
+  type = 'text', 
+  placeholder, 
+  error, 
+  required = false,
+  className = '' 
+}: InputProps) => {
+  return (
+    <div className={`space-y-2 ${className}`}>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        id={name}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        className={`
+          block w-full px-3 py-2 border rounded-md shadow-sm
+          focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+          ${error ? 'border-red-300' : 'border-gray-300'}
+        `}
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
+    </div>
+  );
+};
+```
+
+## Performance Optimization
+- Use React.memo() for expensive components
+- Implement proper loading and error states
+- Use useCallback and useMemo when necessary
+- Follow the single responsibility principle
+- Implement proper error boundaries
+
+## Best Practices
+- Create components with proper prop interfaces
+- Use TypeScript for all component props and state
+- Implement proper loading and error states
+- Use React.memo() for expensive components
+- Follow the single responsibility principle
+- Implement proper error boundaries
+- Use proper key props in lists
+description:
+globs:
+alwaysApply: false
+---

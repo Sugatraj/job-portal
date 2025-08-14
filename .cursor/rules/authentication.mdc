@@ -1,0 +1,63 @@
+# Authentication & Authorization Rules
+
+## Role-Based Access Control
+- **Admin Routes**: `/admin/*` - Only accessible to admin users
+- **User Routes**: `/user/*` - Only accessible to regular users
+- **Protected Routes**: Implement middleware to check authentication
+- **Route Protection**: Redirect unauthorized users to login with clear error messages
+
+## Implementation Requirements
+- Admin logic and user login should NOT see each other
+- Authenticate users properly before allowing access
+- If wrong user tries to access routes, clear authentication and navigate to login
+- Store authentication in localStorage with proper security
+- Implement middleware for route protection
+
+## Authentication Flow
+1. User attempts to access protected route
+2. Check if user is authenticated
+3. Verify user has correct role for the route
+4. If unauthorized: clear auth data and redirect to login
+5. Show clear error message about authentication failure
+
+## Code Examples
+```typescript
+// middleware.ts - Route protection
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get('auth-token')?.value;
+  
+  // Protect admin routes
+  if (pathname.startsWith('/admin') && !isAdmin(token)) {
+    return NextResponse.redirect(new URL('/login?error=unauthorized', request.url));
+  }
+  
+  // Protect user routes
+  if (pathname.startsWith('/user') && !isUser(token)) {
+    return NextResponse.redirect(new URL('/login?error=unauthorized', request.url));
+  }
+}
+
+// ProtectedRoute component
+export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
+  const { user, isLoading } = useUser();
+  
+  if (!user || !user.isAuthenticated) {
+    // Clear any stored auth data
+    localStorage.removeItem('auth-token');
+    return <Navigate to="/login?error=unauthorized" replace />;
+  }
+  
+  if (requiredRole && user.role !== requiredRole) {
+    // Clear auth and redirect
+    localStorage.removeItem('auth-token');
+    return <Navigate to="/login?error=unauthorized" replace />;
+  }
+  
+  return <>{children}</>;
+};
+```
+description:
+globs:
+alwaysApply: false
+---

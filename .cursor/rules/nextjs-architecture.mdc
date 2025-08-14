@@ -1,0 +1,74 @@
+# Next.js 15 Architecture Rules
+
+## App Router Structure
+- Use App Router (not Pages Router)
+- Implement proper loading.tsx, error.tsx, and not-found.tsx files
+- Use dynamic imports for code splitting: `const Component = dynamic(() => import('./Component'))`
+- Implement proper metadata in layout.tsx and page.tsx
+- Use server components by default, client components only when necessary
+- Mark client components with `'use client'` directive
+
+## Folder Organization
+```
+src/app/
+├── (auth)/            # Auth group routes
+│   ├── login/         # Login page
+│   └── layout.tsx     # Auth layout
+├── (dashboard)/       # Dashboard group routes
+│   ├── admin/         # Admin routes (protected)
+│   │   ├── candidates/ # Candidate CRUD
+│   │   └── jobs/      # Jobs CRUD
+│   ├── user/          # User routes (protected)
+│   │   ├── jobs/      # Job listings
+│   │   └── profile/   # User profile
+│   └── layout.tsx     # Dashboard layout with auth
+├── globals.css        # Global styles
+├── layout.tsx         # Root layout
+└── page.tsx           # Home page
+```
+
+## Best Practices
+- Follow the single responsibility principle for each route
+- Implement proper error boundaries
+- Use React.memo() for expensive components
+- Follow the AppLayout and children rendering logic to prevent unnecessary rerenders
+- Implement proper loading and error states
+- Use proper key props in lists
+
+## Code Examples
+```typescript
+// app/layout.tsx - Root layout
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </body>
+    </html>
+  );
+}
+
+// app/(dashboard)/layout.tsx - Dashboard layout
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AppLayout>
+      <Sidebar />
+      <main>{children}</main>
+    </AppLayout>
+  );
+}
+```
+description:
+globs:
+alwaysApply: false
+---

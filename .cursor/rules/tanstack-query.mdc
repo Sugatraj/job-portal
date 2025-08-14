@@ -1,0 +1,92 @@
+# TanStack Query Rules
+
+## Implementation Structure
+Make the TanStack implementation as:
+- **queryClient**: Declare all config like staleTime, gcTime
+- **queryKeys**: Store all keys and act as single source of truth
+
+## Query Client Configuration
+```typescript
+// lib/query/queryClient.ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000,   // 10 minutes (formerly cacheTime)
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
+```
+
+## Query Keys Management
+```typescript
+// lib/query/queryKeys.ts
+export const queryKeys = {
+  auth: {
+    user: ['auth', 'user'],
+    profile: ['auth', 'profile'],
+  },
+  admin: {
+    candidates: ['admin', 'candidates'],
+    candidate: (id: string) => ['admin', 'candidates', id],
+    jobs: ['admin', 'jobs'],
+    job: (id: string) => ['admin', 'jobs', id],
+  },
+  user: {
+    jobs: ['user', 'jobs'],
+    job: (id: string) => ['user', 'jobs', id],
+    profile: ['user', 'profile'],
+  },
+  public: {
+    jobs: ['public', 'jobs'],
+    job: (id: string) => ['public', 'jobs', id],
+  },
+} as const;
+```
+
+## Query Hooks
+```typescript
+// lib/query/hooks/useAuth.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../queryKeys';
+import { apiClient } from '../../api/client';
+
+export const useUser = () => {
+  return useQuery({
+    queryKey: queryKeys.auth.user,
+    queryFn: () => apiClient.get('/auth/me').then(res => res.data),
+    enabled: !!localStorage.getItem('auth-token'),
+  });
+};
+
+export const useLogin = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (credentials: LoginCredentials) => 
+      apiClient.post('/auth/login', credentials).then(res => res.data),
+    onSuccess: (data) => {
+      localStorage.setItem('auth-token', data.token);
+      queryClient.setQueryData(queryKeys.auth.user, data.user);
+    },
+  });
+};
+```
+
+## Best Practices
+- Always use centralized query keys
+- Implement proper error handling and loading states
+- Use React Query's built-in caching and invalidation
+- Handle authentication state properly
+- Implement optimistic updates when appropriate
+description:
+globs:
+alwaysApply: false
+---
