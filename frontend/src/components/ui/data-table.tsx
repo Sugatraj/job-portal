@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Eye } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 
 interface DataTableColumn<T> {
   id: string;
@@ -18,11 +18,9 @@ interface DataTableProps<T> {
   onSearchChange: (value: string) => void;
   searchPlaceholder?: string;
   onAddClick?: () => void;
-  onViewClick?: () => void;
   onStatusFilter?: () => void;
   onPriorityFilter?: () => void;
   addButtonText?: string;
-  viewButtonText?: string;
   statusFilterText?: string;
   priorityFilterText?: string;
   emptyMessage?: string;
@@ -34,13 +32,11 @@ export function DataTable<T>({
   columns,
   searchTerm,
   onSearchChange,
-  searchPlaceholder = "Filter items...",
+  searchPlaceholder = "Search items...",
   onAddClick,
-  onViewClick,
   onStatusFilter,
   onPriorityFilter,
   addButtonText = "Add Item",
-  viewButtonText = "View",
   statusFilterText = "Status",
   priorityFilterText = "Priority",
   emptyMessage = "No items found matching your criteria.",
@@ -80,12 +76,6 @@ export function DataTable<T>({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            {onViewClick && (
-              <Button variant="outline" onClick={onViewClick}>
-                <Eye className="mr-2 h-4 w-4" />
-                {viewButtonText}
-              </Button>
-            )}
             {onAddClick && (
               <Button onClick={onAddClick}>
                 <Plus className="mr-2 h-4 w-4" />

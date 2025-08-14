@@ -59,7 +59,15 @@ const columns = [
 ### Pre-built Column Sets
 
 #### Candidates Columns (`candidates/candidates-columns.tsx`)
-Pre-built columns for the candidates table using the reusable patterns.
+Pre-built columns for the candidates table showing **minimal essential information**:
+- **Candidate Name + Brief Description** (combined in one column)
+- **Category** (Frontend, Backend, Design, etc.)
+- **Priority** (High, Medium, Low)
+- **Status** (Pending, Approved, Rejected)
+- **Applied Date**
+- **Actions** (View Profile, Schedule Interview, Approve, Reject)
+
+> **Note**: This table shows only overview information. Detailed candidate profiles with full experience, skills, documents, and contact information are available in the **CandidateProfile** component.
 
 #### Jobs Columns (`jobs/jobs-columns.tsx`)
 Pre-built columns for the jobs table demonstrating different data types and custom columns.
@@ -74,9 +82,32 @@ import { jobsColumns } from '@/components/jobs/jobs-columns';
 <DataTable columns={jobsColumns} ... />
 ```
 
+### Detailed Views
+
+#### CandidateProfile (`candidates/candidate-profile.tsx`)
+Comprehensive candidate profile view showing:
+- **Full Contact Information** (email, phone, location)
+- **Detailed Work Experience** with company names and dates
+- **Complete Skills & Technologies** list
+- **Documents & Portfolio** with view/download options
+- **Action Buttons** for interview scheduling, approval, rejection
+
+**Usage:**
+```tsx
+import { CandidateProfile } from '@/components/candidates/candidate-profile';
+
+<CandidateProfile
+  candidate={selectedCandidate}
+  onBack={() => setView('list')}
+  onScheduleInterview={handleScheduleInterview}
+  onApprove={handleApprove}
+  onReject={handleReject}
+/>
+```
+
 ## Creating New Admin Pages
 
-### Example 1: Candidates Page
+### Example 1: Candidates Overview Page
 ```tsx
 import { DataTable } from '@/components/ui/data-table';
 import { candidatesColumns } from '@/components/candidates/candidates-columns';
@@ -93,7 +124,7 @@ export default function CandidatesPage() {
       onSearchChange={setSearchTerm}
       onAddClick={() => console.log('Add candidate')}
       addButtonText="Add Candidate"
-      searchPlaceholder="Filter candidates..."
+      searchPlaceholder="Search candidates by name, skills, or category..."
     />
   );
 }
@@ -159,6 +190,18 @@ const yourColumns = [
 />
 ```
 
+## Design Philosophy
+
+### **Overview → Detail Pattern**
+- **Tables show minimal essential information** for quick scanning and decision-making
+- **Detailed views provide comprehensive information** when needed
+- **Actions are contextual** to the current view level
+
+### **Information Hierarchy**
+1. **Essential Info** (Name, Status, Priority) - Always visible
+2. **Supporting Info** (Category, Date) - Context for decisions
+3. **Detailed Info** (Experience, Skills, Documents) - Available on demand
+
 ## Benefits
 
 - **Consistency**: All admin pages use the same table structure
@@ -167,6 +210,7 @@ const yourColumns = [
 - **Type Safety**: Full TypeScript support with proper interfaces
 - **Accessibility**: Built-in accessibility features from shadcn/ui
 - **Responsive**: Mobile-first design with proper breakpoints
+- **Scalable**: Overview tables don't get cluttered with too much information
 
 ## Customization
 
@@ -186,7 +230,8 @@ src/components/
 │   ├── table-columns.tsx       # Column utility functions
 │   └── README.md               # This documentation
 ├── candidates/
-│   └── candidates-columns.tsx  # Pre-built candidate columns
+│   ├── candidates-columns.tsx  # Overview table columns
+│   └── candidate-profile.tsx   # Detailed profile view
 ├── jobs/
 │   └── jobs-columns.tsx        # Pre-built job columns
 └── README.md                   # Component documentation

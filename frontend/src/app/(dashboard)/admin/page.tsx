@@ -120,12 +120,20 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground mb-4">
               Create, read, update, and delete candidate information.
             </p>
-            <Button 
-              className="w-full" 
-              onClick={() => router.push(ROUTES.admin.candidates)}
-            >
-              Go to Candidates
-            </Button>
+            <div className="space-y-2">
+              <Button 
+                className="w-full" 
+                onClick={() => {
+                  console.log('Navigating to candidates page:', ROUTES.admin.candidates);
+                  router.push(ROUTES.admin.candidates);
+                }}
+              >
+                Go to Candidates
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Route: {ROUTES.admin.candidates}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -140,12 +148,20 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground mb-4">
               Create, read, update, and delete job postings.
             </p>
-            <Button 
-              className="w-full"
-              onClick={() => router.push(ROUTES.admin.jobs)}
-            >
-              Go to Jobs
-            </Button>
+            <div className="space-y-2">
+              <Button 
+                className="w-full"
+                onClick={() => {
+                  console.log('Navigating to jobs page:', ROUTES.admin.jobs);
+                  router.push(ROUTES.admin.jobs);
+                }}
+              >
+                Go to Jobs
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Route: {ROUTES.admin.jobs}
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

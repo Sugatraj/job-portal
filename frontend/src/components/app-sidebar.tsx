@@ -29,6 +29,10 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
 
+  console.log('AppSidebar: Current pathname:', pathname);
+  console.log('AppSidebar: Current user:', user);
+  console.log('AppSidebar: User role:', user?.role);
+
   const adminMenuItems = [
     {
       title: 'Dashboard',
@@ -67,6 +71,9 @@ export function AppSidebar() {
 
   const menuItems = user?.role === 'admin' ? adminMenuItems : userMenuItems;
 
+  console.log('AppSidebar: Menu items:', menuItems);
+  console.log('AppSidebar: Admin routes:', ROUTES.admin);
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4">
@@ -85,7 +92,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    onClick={() => console.log('Sidebar navigation clicked:', item.title, item.url)}
+                  >
                     <Link href={item.url}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>

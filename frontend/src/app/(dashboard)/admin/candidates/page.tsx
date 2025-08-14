@@ -5,22 +5,34 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/lib/constants';
 import { DataTable } from '@/components/ui/data-table';
-import { candidatesColumns, Candidate } from '@/components/candidates/candidates-columns';
+import { createCandidatesColumns, Candidate } from '@/components/candidates/candidates-columns';
 import { mockCandidates } from '@/lib/mock/candidates';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { CandidateProfile } from '@/components/candidates/candidate-profile';
 
 export default function CandidatesPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'profile'>('list');
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   useEffect(() => {
+    console.log('CandidatesPage: User role:', user?.role);
+    console.log('CandidatesPage: Current user:', user);
+    
     if (!user || user.role !== 'admin') {
+      console.log('CandidatesPage: Redirecting to login');
       router.push(ROUTES.login);
       return;
     }
+    
+    console.log('CandidatesPage: User authenticated as admin');
   }, [user, router]);
 
   if (!user || user.role !== 'admin') {
+    console.log('CandidatesPage: Rendering null - user not admin');
     return null;
   }
 
@@ -36,9 +48,10 @@ export default function CandidatesPage() {
     console.log('Add candidate clicked');
   };
 
-  const handleViewCandidate = () => {
-    // TODO: Implement view candidate functionality
-    console.log('View candidate clicked');
+  const handleViewCandidate = (candidate: Candidate) => {
+    console.log('View candidate profile clicked:', candidate);
+    setSelectedCandidate(candidate);
+    setViewMode('profile');
   };
 
   const handleStatusFilter = () => {
@@ -51,12 +64,69 @@ export default function CandidatesPage() {
     console.log('Priority filter clicked');
   };
 
+  const handleBackToDashboard = () => {
+    router.push(ROUTES.admin.dashboard);
+  };
+
+  const handleBackToList = () => {
+    setViewMode('list');
+    setSelectedCandidate(null);
+  };
+
+  const handleScheduleInterview = (candidate: Candidate) => {
+    // TODO: Implement interview scheduling
+    console.log('Schedule interview for:', candidate.title);
+  };
+
+  const handleApprove = (candidate: Candidate) => {
+    // TODO: Implement candidate approval
+    console.log('Approve candidate:', candidate.title);
+  };
+
+  const handleReject = (candidate: Candidate) => {
+    // TODO: Implement candidate rejection
+    console.log('Reject candidate:', candidate.title);
+  };
+
+  // Create columns with handlers
+  const candidatesColumns = createCandidatesColumns({
+    onViewProfile: handleViewCandidate,
+    onScheduleInterview: handleScheduleInterview,
+    onApprove: handleApprove,
+    onReject: handleReject
+  });
+
+  // Show detailed profile view
+  if (viewMode === 'profile' && selectedCandidate) {
+    return (
+      <CandidateProfile
+        candidate={selectedCandidate}
+        onBack={handleBackToList}
+        onScheduleInterview={handleScheduleInterview}
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
+    );
+  }
+
+  // Show candidates list view
   return (
     <div className="space-y-6">
+      {/* Navigation Header */}
+      <div className="flex items-center gap-4">
+        <Button variant="outline" onClick={handleBackToDashboard}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </div>
+
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Candidates</h1>
         <p className="text-muted-foreground">
-          Manage and review job candidates for your organization.
+          Overview of job candidates. Click "View Profile" to see detailed information, experience, and documents.
+        </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Current user: {user?.name} ({user?.role})
         </p>
       </div>
 
@@ -65,13 +135,11 @@ export default function CandidatesPage() {
         columns={candidatesColumns}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        searchPlaceholder="Filter candidates..."
+        searchPlaceholder="Search candidates by name, skills, or category..."
         onAddClick={handleAddCandidate}
-        onViewClick={handleViewCandidate}
         onStatusFilter={handleStatusFilter}
         onPriorityFilter={handlePriorityFilter}
         addButtonText="Add Candidate"
-        viewButtonText="View"
         statusFilterText="Status"
         priorityFilterText="Priority"
         emptyMessage="No candidates found matching your criteria."
