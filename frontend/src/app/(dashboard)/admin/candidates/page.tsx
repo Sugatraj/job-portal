@@ -7,6 +7,7 @@ import { ROUTES } from '@/lib/constants';
 import { DataTable } from '@/components/ui/data-table';
 import { createCandidatesColumns, Candidate } from '@/components/candidates/candidates-columns';
 import { mockCandidates } from '@/lib/mock/candidates';
+import { candidatesService } from '@/lib/services/candidatesService';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { CandidateProfile } from '@/components/candidates/candidate-profile';
@@ -17,6 +18,7 @@ export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'profile'>('list');
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   useEffect(() => {
     console.log('CandidatesPage: User role:', user?.role);
@@ -29,14 +31,29 @@ export default function CandidatesPage() {
     }
     
     console.log('CandidatesPage: User authenticated as admin');
+    
+    // Initialize candidates from local storage
+    candidatesService.initializeWithMockData(mockCandidates);
+    const storedCandidates = candidatesService.getAllCandidates();
+    setCandidates(storedCandidates);
   }, [user, router]);
+
+  // Refresh candidates when page gains focus (e.g., returning from add/edit)
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshCandidates();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
 
   if (!user || user.role !== 'admin') {
     console.log('CandidatesPage: Rendering null - user not admin');
     return null;
   }
 
-  const filteredCandidates = mockCandidates.filter(candidate => {
+  const filteredCandidates = candidates.filter(candidate => {
     const matchesSearch = candidate.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          candidate.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          candidate.category.toLowerCase().includes(searchTerm.toLowerCase());
@@ -44,14 +61,35 @@ export default function CandidatesPage() {
   });
 
   const handleAddCandidate = () => {
-    // TODO: Implement add candidate functionality
-    console.log('Add candidate clicked');
+    router.push(ROUTES.admin.candidates + '/add');
+  };
+
+  const refreshCandidates = () => {
+    const storedCandidates = candidatesService.getAllCandidates();
+    setCandidates(storedCandidates);
   };
 
   const handleViewCandidate = (candidate: Candidate) => {
     console.log('View candidate profile clicked:', candidate);
     setSelectedCandidate(candidate);
     setViewMode('profile');
+  };
+
+  const handleEditCandidate = (candidate: Candidate) => {
+    router.push(`${ROUTES.admin.candidates}/${candidate.id}/edit`);
+  };
+
+  const handleDeleteCandidate = (candidate: Candidate) => {
+    if (confirm(`Are you sure you want to delete ${candidate.title}?`)) {
+      const success = candidatesService.deleteCandidate(candidate.id);
+      if (success) {
+        refreshCandidates();
+        // Show success message
+        alert(`Successfully deleted ${candidate.title}`);
+      } else {
+        alert('Failed to delete candidate');
+      }
+    }
   };
 
   const handleStatusFilter = () => {
@@ -91,6 +129,8 @@ export default function CandidatesPage() {
   // Create columns with handlers
   const candidatesColumns = createCandidatesColumns({
     onViewProfile: handleViewCandidate,
+    onEdit: handleEditCandidate,
+    onDelete: handleDeleteCandidate,
     onScheduleInterview: handleScheduleInterview,
     onApprove: handleApprove,
     onReject: handleReject
@@ -102,9 +142,9 @@ export default function CandidatesPage() {
       <CandidateProfile
         candidate={selectedCandidate}
         onBack={handleBackToList}
-        onScheduleInterview={handleScheduleInterview}
-        onApprove={handleApprove}
-        onReject={handleReject}
+        onScheduleInterview={() => handleScheduleInterview(selectedCandidate)}
+        onApprove={() => handleApprove(selectedCandidate)}
+        onReject={() => handleReject(selectedCandidate)}
       />
     );
   }

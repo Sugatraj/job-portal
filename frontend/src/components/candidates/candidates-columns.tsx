@@ -2,7 +2,7 @@ import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Eye, MessageSquare, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronDown, Eye, Edit, Trash2, MessageSquare, CheckCircle, XCircle } from 'lucide-react';
 import {
   createTextColumn,
   createBadgeColumn,
@@ -24,6 +24,8 @@ export interface Candidate {
 
 interface CandidatesColumnsProps {
   onViewProfile: (candidate: Candidate) => void;
+  onEdit: (candidate: Candidate) => void;
+  onDelete: (candidate: Candidate) => void;
   onScheduleInterview: (candidate: Candidate) => void;
   onApprove: (candidate: Candidate) => void;
   onReject: (candidate: Candidate) => void;
@@ -31,6 +33,8 @@ interface CandidatesColumnsProps {
 
 export const createCandidatesColumns = ({
   onViewProfile,
+  onEdit,
+  onDelete,
   onScheduleInterview,
   onApprove,
   onReject
@@ -114,6 +118,14 @@ export const createCandidatesColumns = ({
             <DropdownMenuItem onClick={() => onViewProfile(candidate)}>
               <Eye className="mr-2 h-4 w-4" />
               View Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(candidate)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(candidate)}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onScheduleInterview(candidate)}>
               <MessageSquare className="mr-2 h-4 w-4" />
