@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
@@ -35,8 +36,9 @@ export function AppHeader() {
         {/* Center - can be used for breadcrumbs or other elements */}
         <div className="flex-1" />
         
-        {/* Right side - User dropdown */}
+        {/* Right side - Theme toggle and User dropdown */}
         <div className="flex items-center gap-2">
+          <ModeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

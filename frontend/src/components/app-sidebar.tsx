@@ -97,16 +97,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        <div className="space-y-3">
-          {/* User Info Section - Only show when expanded */}
-          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
-            <User className="h-4 w-4 flex-shrink-0" />
-            <span className="text-sm">{user?.name}</span>
-          </div>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
