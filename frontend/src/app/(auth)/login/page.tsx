@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { validateUser } from '@/lib/auth/fakeUsers';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/lib/constants';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function LoginPage() {
   const [mobile, setMobile] = useState('');
@@ -30,7 +31,6 @@ export default function LoginPage() {
       if (user) {
         login(user);
         
-        // Redirect based on role
         if (user.role === 'admin') {
           router.push(ROUTES.admin.dashboard);
         } else {
@@ -47,18 +47,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Theme Toggle in Top Right */}
+      <div className="absolute top-4 right-4">
+        <ModeToggle />
+      </div>
+      
+      <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Job Portal</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-2xl text-center dark:text-white">Job Portal</CardTitle>
+          <CardDescription className="text-center dark:text-gray-400">
             Sign in to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="mobile">Mobile Number</Label>
+              <Label htmlFor="mobile" className="dark:text-gray-200">Mobile Number</Label>
               <Input
                 id="mobile"
                 type="tel"
@@ -66,11 +71,12 @@ export default function LoginPage() {
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
                 required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="dark:text-gray-200">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -78,11 +84,12 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 text-center">
+              <div className="text-sm text-red-600 dark:text-red-400 text-center">
                 {error}
               </div>
             )}
@@ -96,7 +103,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-sm text-gray-600">
+          <div className="mt-6 text-sm text-gray-600 dark:text-gray-400">
             <p className="text-center font-medium">Demo Users:</p>
             <div className="mt-2 space-y-1 text-xs">
               <p><strong>Admin:</strong> 7972908961 / 12345</p>

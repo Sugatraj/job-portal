@@ -91,11 +91,11 @@ export function AppSidebar() {
   const navItems = user?.role === 'admin' ? adminNavItems : userNavItems;
 
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar className="dark:bg-gray-900 dark:border-gray-700">
+      <SidebarHeader className="dark:bg-gray-900">
         <div className="flex items-center space-x-2 px-4 py-2">
           <Building2 className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-lg">Job Portal</span>
+          <span className="font-semibold text-lg dark:text-white">Job Portal</span>
         </div>
       </SidebarHeader>
       
