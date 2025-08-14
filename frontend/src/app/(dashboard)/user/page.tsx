@@ -71,9 +71,6 @@ export default function UserDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground mb-4">
-            You are logged in as a <strong>User</strong>.
-          </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Role</p>

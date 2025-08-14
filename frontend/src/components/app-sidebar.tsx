@@ -54,14 +54,14 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: 'My Profile',
-      url: ROUTES.user.profile,
-      icon: User,
-    },
-    {
       title: 'Applied Jobs',
       url: ROUTES.user.appliedJobs,
       icon: FileText,
+    },
+    {
+      title: 'My Profile',
+      url: ROUTES.user.profile,
+      icon: User,
     },
   ];
 
