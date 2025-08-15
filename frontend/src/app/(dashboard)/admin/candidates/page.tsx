@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/lib/constants';
 import { DataTable } from '@/components/ui/data-table';
 import { createCandidatesColumns, Candidate } from '@/components/candidates/candidates-columns';
-import { mockCandidates } from '@/lib/mock/candidates';
 import { candidatesService } from '@/lib/services/candidatesService';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home } from 'lucide-react';
@@ -36,22 +35,16 @@ export default function CandidatesPage() {
     console.log('CandidatesPage: User authenticated as admin');
     
     try {
-      // Initialize candidates from local storage
-      candidatesService.initializeWithMockData(mockCandidates);
+      // Initialize with one sample candidate if storage is empty
+      candidatesService.initializeWithSampleData();
       const storedCandidates = candidatesService.getAllCandidates();
       console.log('CandidatesPage: Loaded candidates:', storedCandidates);
       
-      // Ensure we have valid candidates data
-      if (Array.isArray(storedCandidates) && storedCandidates.length > 0) {
-        setCandidates(storedCandidates);
-      } else {
-        console.warn('CandidatesPage: No valid candidates data found, using mock data directly');
-        setCandidates(mockCandidates);
-      }
+      // Set candidates from localStorage
+      setCandidates(storedCandidates);
     } catch (error) {
       console.error('CandidatesPage: Error loading candidates:', error);
-      // Fallback to mock data if service fails
-      setCandidates(mockCandidates);
+      setCandidates([]);
     }
   }, [user, router]);
 

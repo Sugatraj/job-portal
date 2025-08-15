@@ -104,7 +104,11 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
             
             <h1 className="text-2xl font-bold tracking-tight">Add New Candidate</h1>
             
-            <Button onClick={handleSubmit} disabled={!isFormValid || isSubmitting} className="min-w-[120px]">
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!isFormValid || isSubmitting} 
+              className={`min-w-[120px] ${isFormValid ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
@@ -129,21 +133,12 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
             />
           )}
 
-          {/* Form Section Header */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <UserPlus className="h-5 w-5" />
-              Candidate Information
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Fill in the required fields to create a new candidate profile.
-            </p>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="fullName">Full Name *</Label>
+                <Label htmlFor="fullName" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Full Name
+                </Label>
                 <Input
                   id="fullName"
                   placeholder="Enter candidate's full name"
@@ -154,7 +149,7 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
               </div>
               
               <div>
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Label htmlFor="dateOfBirth" className="mb-2 block">Date of Birth</Label>
                 <Input
                   id="dateOfBirth"
                   type="date"
@@ -162,9 +157,23 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                 />
               </div>
+
+<div>
+  <Label htmlFor="email" className="mb-2 block">
+    <span className="text-red-500 mr-1">*</span>Email Address
+  </Label>
+  <Input
+    id="email"
+    type="email"
+    placeholder="Enter email address"
+    value={formData.email || ''}
+    onChange={(e) => handleInputChange('email', e.target.value)}
+    required
+  />
+</div>
               
               <div>
-                <Label htmlFor="gender">Gender</Label>
+                <Label htmlFor="gender" className="mb-2 block">Gender</Label>
                 <Select
                   value={formData.gender || ''}
                   onValueChange={(value) => handleInputChange('gender', value)}
@@ -180,33 +189,37 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                   </SelectContent>
                 </Select>
               </div>
-
-              <div>
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter email address"
-                  value={formData.email || ''}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                />
-              </div>
               
               <div>
-                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Label htmlFor="phoneNumber" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Phone Number
+                </Label>
                 <Input
                   id="phoneNumber"
                   type="tel"
-                  placeholder="Enter phone number"
+                  placeholder="Enter 10-digit phone number"
                   value={formData.phoneNumber || ''}
-                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow digits and limit to 10 characters
+                    if (/^\d{0,10}$/.test(value)) {
+                      handleInputChange('phoneNumber', value);
+                    }
+                  }}
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  title="Phone number must be 10 digits starting with 6, 7, 8, or 9"
                   required
                 />
+                {formData.phoneNumber && formData.phoneNumber.length === 10 && !/^[6-9]/.test(formData.phoneNumber) && (
+                  <p className="text-red-500 text-xs mt-1">Phone number must start with 6, 7, 8, or 9</p>
+                )}
               </div>
               
               <div>
-                <Label htmlFor="location">Location *</Label>
+                <Label htmlFor="location" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Location
+                </Label>
                 <Input
                   id="location"
                   placeholder="Enter city/location"
@@ -217,7 +230,9 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
               </div>
               
               <div>
-                <Label htmlFor="city">City *</Label>
+                <Label htmlFor="city" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>City
+                </Label>
                 <Input
                   id="city"
                   placeholder="Enter city"
@@ -228,7 +243,9 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
               </div>
 
               <div>
-                <Label htmlFor="pincode">Pincode *</Label>
+                <Label htmlFor="pincode" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Pincode
+                </Label>
                 <Input
                   id="pincode"
                   placeholder="Enter pincode"
@@ -239,7 +256,9 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
               </div>
 
               <div>
-                <Label htmlFor="password">Password *</Label>
+                <Label htmlFor="password" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Password
+                </Label>
                 <Input
                   id="password"
                   type="password"

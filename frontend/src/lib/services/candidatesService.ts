@@ -144,12 +144,61 @@ class CandidatesService {
     return true;
   }
 
-  // Initialize with mock data if storage is empty
-  initializeWithMockData(mockCandidates: Candidate[]): void {
+  // Initialize with one sample candidate if storage is empty
+  initializeWithSampleData(): void {
     const existingCandidates = this.getCandidatesFromStorage();
     
     if (existingCandidates.length === 0) {
-      this.saveCandidatesToStorage(mockCandidates);
+      const sampleCandidate: Candidate = {
+        id: '1',
+        // Admin-Required Fields
+        fullName: 'John Smith',
+        email: 'john.smith@email.com',
+        phoneNumber: '9876543210',
+        dateOfBirth: '1990-05-15',
+        gender: 'male',
+        location: 'San Francisco',
+        city: 'San Francisco',
+        pincode: '94102',
+        password: 'hashed_password_123',
+        
+        // Candidate Self-Update Fields
+        profileTitle: 'Senior Frontend Developer',
+        currentJobStatus: 'employed',
+        totalExperience: { years: 5, months: 3 },
+        currentEmployer: 'TechCorp Inc.',
+        currentJobTitle: 'Frontend Developer',
+        primarySkills: ['React', 'TypeScript', 'JavaScript', 'CSS', 'HTML'],
+        secondarySkills: ['Node.js', 'GraphQL', 'Redux'],
+        skillProficiencyLevel: 'advanced',
+        certifications: ['AWS Certified Developer', 'React Certification'],
+        highestQualification: 'Bachelor of Science',
+        specialization: 'Computer Science',
+        university: 'Stanford University',
+        yearOfPassing: 2018,
+        grades: '3.8/4.0',
+        preferredJobType: 'full-time',
+        preferredIndustry: 'Technology',
+        preferredRoles: ['Senior Frontend Developer', 'Frontend Lead', 'UI Developer'],
+        expectedSalary: '$130,000 - $150,000',
+        workModePreference: 'hybrid',
+        noticePeriod: '2 weeks',
+        linkedinUrl: 'https://linkedin.com/in/johnsmith',
+        portfolioUrl: 'https://johnsmith.dev',
+        languages: [
+          { language: 'English', proficiency: 'native' },
+          { language: 'Spanish', proficiency: 'conversational' }
+        ],
+        workAuthorization: 'US Citizen',
+        
+        // System Fields
+        status: 'pending',
+        priority: 'high',
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z'
+      };
+      
+      this.saveCandidatesToStorage([sampleCandidate]);
     }
   }
 
