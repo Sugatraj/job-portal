@@ -188,7 +188,7 @@ export function AddCandidateForm({
               value={formData.gender || ""}
               onValueChange={(value) => handleInputChange("gender", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
