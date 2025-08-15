@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Save, UserPlus } from 'lucide-react';
 import { CreateCandidateData } from '@/lib/services/candidatesService';
 import { Toast } from '@/components/ui/toast';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { ROUTES } from '@/lib/constants';
+import { Home } from 'lucide-react';
 
 interface AddCandidateFormProps {
   onCancel: () => void;
@@ -18,11 +21,21 @@ interface AddCandidateFormProps {
 
 export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps) {
   const [formData, setFormData] = useState<CreateCandidateData>({
-    title: '',
-    description: '',
-    category: '',
-    priority: 'medium',
-    status: 'pending'
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    location: '',
+    city: '',
+    pincode: '',
+    password: '',
+    profileTitle: '',
+    currentJobStatus: 'employed',
+    primarySkills: [],
+    skillProficiencyLevel: 'intermediate',
+    preferredJobType: 'full-time',
+    expectedSalary: '',
+    status: 'pending',
+    priority: 'medium'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,180 +63,195 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
       setTimeout(() => {
         onSuccess();
       }, 1500);
-          } catch (error) {
-        console.error('Error creating candidate:', error);
-        setToastMessage('Failed to create candidate. Please try again.');
-        setToastType('error');
-        setShowToast(true);
-      } finally {
-        setIsSubmitting(false);
-      }
+    } catch (error) {
+      console.error('Error creating candidate:', error);
+      setToastMessage('Failed to create candidate. Please try again.');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleInputChange = (field: keyof CreateCandidateData, value: string) => {
+  const handleInputChange = (field: keyof CreateCandidateData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const isFormValid = formData.title.trim() && formData.description.trim() && formData.category.trim();
+  const isFormValid = formData.fullName?.trim() && formData.email?.trim() && formData.phoneNumber?.trim() && formData.location?.trim() && formData.city?.trim() && formData.pincode?.trim() && formData.password?.trim();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Toast Notification */}
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          onClose={() => setShowToast(false)}
-        />
-      )}
-      
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={onCancel} size="sm">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Candidates
-        </Button>
-      </div>
+    <div className="w-full space-y-4">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          { href: ROUTES.admin.dashboard, label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
+          { href: ROUTES.admin.candidates, label: 'Candidates' },
+          { label: 'Add New' },
+        ]}
+      />
 
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Add New Candidate</h1>
-        <p className="text-muted-foreground">
-          Create a new candidate profile with essential information.
-        </p>
-      </div>
-
-      {/* Form */}
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
-            Candidate Information
-          </CardTitle>
-          <CardDescription>
-            Fill in the required fields to create a new candidate profile.
-          </CardDescription>
+          {/* Header Row: Back | Title | Create (all in one line) */}
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={onCancel} size="sm">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            
+            <h1 className="text-2xl font-bold tracking-tight">Add New Candidate</h1>
+            
+            <Button onClick={handleSubmit} disabled={!isFormValid || isSubmitting} className="min-w-[120px]">
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Create
+                </>
+              )}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Full Name *</Label>
-              <Input
-                id="title"
-                placeholder="Enter candidate's full name"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                required
-              />
+          {/* Toast Notification */}
+          {showToast && (
+            <Toast
+              message={toastMessage}
+              type={toastType}
+              onClose={() => setShowToast(false)}
+            />
+          )}
+
+          {/* Form Section Header */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Candidate Information
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Fill in the required fields to create a new candidate profile.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <Label htmlFor="fullName">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  placeholder="Enter candidate's full name"
+                  value={formData.fullName || ''}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth || ''}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="gender">Gender</Label>
+                <Select
+                  value={formData.gender || ''}
+                  onValueChange={(value) => handleInputChange('gender', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter email address"
+                  value={formData.email || ''}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="Enter phone number"
+                  value={formData.phoneNumber || ''}
+                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="location">Location *</Label>
+                <Input
+                  id="location"
+                  placeholder="Enter city/location"
+                  value={formData.location || ''}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="city">City *</Label>
+                <Input
+                  id="city"
+                  placeholder="Enter city"
+                  value={formData.city || ''}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="pincode">Pincode *</Label>
+                <Input
+                  id="pincode"
+                  placeholder="Enter pincode"
+                  value={formData.pincode || ''}
+                  onChange={(e) => handleInputChange('pincode', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter password"
+                  value={formData.password || ''}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  required
+                />
+              </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Professional Summary *</Label>
-              <Textarea
-                id="description"
-                placeholder="Brief description of skills, experience, and background"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                rows={3}
-                required
-              />
-            </div>
-
-            {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="category">Job Category *</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => handleInputChange('category', value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Frontend">Frontend Development</SelectItem>
-                  <SelectItem value="Backend">Backend Development</SelectItem>
-                  <SelectItem value="Full Stack">Full Stack Development</SelectItem>
-                  <SelectItem value="Design">UI/UX Design</SelectItem>
-                  <SelectItem value="Product">Product Management</SelectItem>
-                  <SelectItem value="DevOps">DevOps</SelectItem>
-                  <SelectItem value="Data">Data Science</SelectItem>
-                  <SelectItem value="Marketing">Marketing</SelectItem>
-                  <SelectItem value="Sales">Sales</SelectItem>
-                  <SelectItem value="HR">Human Resources</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Priority */}
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority Level</Label>
-              <Select
-                value={formData.priority}
-                onValueChange={(value) => handleInputChange('priority', value as 'low' | 'medium' | 'high')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Status */}
-            <div className="space-y-2">
-              <Label htmlFor="status">Initial Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => handleInputChange('status', value as 'pending' | 'approved' | 'rejected')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending Review</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={!isFormValid || isSubmitting}
-                className="min-w-[120px]"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Create Candidate
-                  </>
-                )}
-              </Button>
-            </div>
+            {/* Form Actions - Removed since Create button is in header */}
           </form>
         </CardContent>
       </Card>
