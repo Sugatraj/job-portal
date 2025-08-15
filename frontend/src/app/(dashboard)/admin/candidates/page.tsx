@@ -32,11 +32,34 @@ export default function CandidatesPage() {
     
     console.log('CandidatesPage: User authenticated as admin');
     
-    // Initialize candidates from local storage
-    candidatesService.initializeWithMockData(mockCandidates);
-    const storedCandidates = candidatesService.getAllCandidates();
-    setCandidates(storedCandidates);
+    try {
+      // Initialize candidates from local storage
+      candidatesService.initializeWithMockData(mockCandidates);
+      const storedCandidates = candidatesService.getAllCandidates();
+      console.log('CandidatesPage: Loaded candidates:', storedCandidates);
+      
+      // Ensure we have valid candidates data
+      if (Array.isArray(storedCandidates) && storedCandidates.length > 0) {
+        setCandidates(storedCandidates);
+      } else {
+        console.warn('CandidatesPage: No valid candidates data found, using mock data directly');
+        setCandidates(mockCandidates);
+      }
+    } catch (error) {
+      console.error('CandidatesPage: Error loading candidates:', error);
+      // Fallback to mock data if service fails
+      setCandidates(mockCandidates);
+    }
   }, [user, router]);
+
+  // Debug: Log candidates data
+  useEffect(() => {
+    console.log('CandidatesPage: Current candidates state:', candidates);
+    console.log('CandidatesPage: Candidates length:', candidates?.length);
+    if (candidates && candidates.length > 0) {
+      console.log('CandidatesPage: First candidate sample:', candidates[0]);
+    }
+  }, [candidates]);
 
   // Refresh candidates when page gains focus (e.g., returning from add/edit)
   useEffect(() => {
@@ -53,11 +76,33 @@ export default function CandidatesPage() {
     return null;
   }
 
-  const filteredCandidates = candidates.filter(candidate => {
-    const matchesSearch = candidate.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.category.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+  // Ensure candidates is always an array before filtering
+  const validCandidates = Array.isArray(candidates) ? candidates : [];
+  
+  const filteredCandidates = validCandidates.filter(candidate => {
+    // Safety check: ensure candidate is valid
+    if (!candidate || typeof candidate !== 'object') {
+      console.warn('CandidatesPage: Invalid candidate found:', candidate);
+      return false;
+    }
+    
+    // Safety check: ensure required properties exist
+    if (!candidate.fullName) {
+      console.warn('CandidatesPage: Candidate missing fullName:', candidate);
+      return false;
+    }
+    
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    // Safely check each property with null/undefined checks
+    const nameMatch = candidate.fullName?.toLowerCase().includes(searchTermLower) || false;
+    const titleMatch = candidate.profileTitle?.toLowerCase().includes(searchTermLower) || false;
+    const skillsMatch = candidate.primarySkills?.some(skill => 
+      skill.toLowerCase().includes(searchTermLower)
+    ) || false;
+    const locationMatch = candidate.location?.toLowerCase().includes(searchTermLower) || false;
+    
+    return nameMatch || titleMatch || skillsMatch || locationMatch;
   });
 
   const handleAddCandidate = () => {
@@ -80,12 +125,12 @@ export default function CandidatesPage() {
   };
 
   const handleDeleteCandidate = (candidate: Candidate) => {
-    if (confirm(`Are you sure you want to delete ${candidate.title}?`)) {
+    if (confirm(`Are you sure you want to delete ${candidate.fullName}?`)) {
       const success = candidatesService.deleteCandidate(candidate.id);
       if (success) {
         refreshCandidates();
         // Show success message
-        alert(`Successfully deleted ${candidate.title}`);
+        alert(`Successfully deleted ${candidate.fullName}`);
       } else {
         alert('Failed to delete candidate');
       }
@@ -113,17 +158,17 @@ export default function CandidatesPage() {
 
   const handleScheduleInterview = (candidate: Candidate) => {
     // TODO: Implement interview scheduling
-    console.log('Schedule interview for:', candidate.title);
+    console.log('Schedule interview for:', candidate.fullName);
   };
 
   const handleApprove = (candidate: Candidate) => {
     // TODO: Implement candidate approval
-    console.log('Approve candidate:', candidate.title);
+    console.log('Approve candidate:', candidate.fullName);
   };
 
   const handleReject = (candidate: Candidate) => {
     // TODO: Implement candidate rejection
-    console.log('Reject candidate:', candidate.title);
+    console.log('Reject candidate:', candidate.fullName);
   };
 
   // Create columns with handlers
@@ -175,14 +220,14 @@ export default function CandidatesPage() {
         columns={candidatesColumns}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        searchPlaceholder="Search candidates by name, skills, or category..."
+        searchPlaceholder="Search candidates by name, profile title, skills, or location..."
         onAddClick={handleAddCandidate}
         onStatusFilter={handleStatusFilter}
         onPriorityFilter={handlePriorityFilter}
         addButtonText="Add Candidate"
         statusFilterText="Status"
         priorityFilterText="Priority"
-        emptyMessage="No candidates found matching your criteria."
+        emptyMessage={validCandidates.length === 0 ? "Loading candidates..." : "No candidates found matching your criteria."}
       />
     </div>
   );
