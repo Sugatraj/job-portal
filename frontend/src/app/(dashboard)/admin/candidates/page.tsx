@@ -9,9 +9,10 @@ import { createCandidatesColumns, Candidate } from '@/components/candidates/cand
 import { mockCandidates } from '@/lib/mock/candidates';
 import { candidatesService } from '@/lib/services/candidatesService';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 import { CandidateProfile } from '@/components/candidates/candidate-profile';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export default function CandidatesPage() {
   const { user } = useAuth();
@@ -197,123 +198,133 @@ export default function CandidatesPage() {
 
   // Show candidates list view
   return (
-    <Card>
-      <CardHeader>
-        {/* Header Row: Back | Title | Create (all in one line) */}
-        <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={handleBackToDashboard}>
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          
-          <h1 className="text-3xl font-bold tracking-tight">Candidates</h1>
-          
-          <Button onClick={handleAddCandidate}>
-            Create
-          </Button>
-        </div>
-      </CardHeader>
+    <div className="space-y-4">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          { href: ROUTES.admin.dashboard, label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
+          { href: ROUTES.admin.candidates, label: 'Candidates' },
+        ]}
+      />
+
+      <Card>
+        <CardHeader>
+          {/* Header Row: Back | Title | Create (all in one line) */}
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={handleBackToDashboard}>
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            
+            <h1 className="text-2xl font-bold tracking-tight">Candidates</h1>
+            
+            <Button onClick={handleAddCandidate}>
+              Create
+            </Button>
+          </div>
+        </CardHeader>
       
-      <CardContent className="space-y-6">
+        <CardContent className="space-y-6">
 
-        {/* Table: Clean data display */}
-        <div className="border rounded-lg">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCandidates.map((candidate) => (
-                <tr key={candidate.id} className="border-t hover:bg-muted/25">
-                  <td className="px-4 py-3">
-                    <div>
-                      <div className="font-medium">{candidate.fullName}</div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm">{candidate.email}</td>
-                  <td className="px-4 py-3">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      candidate.status === 'approved' ? 'bg-green-100 text-green-800' :
-                      candidate.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {candidate.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewCandidate(candidate)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditCandidate(candidate)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteCandidate(candidate)}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </Button>
-                    </div>
-                  </td>
+          {/* Table: Clean data display */}
+          <div className="border rounded-lg">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredCandidates.map((candidate) => (
+                  <tr key={candidate.id} className="border-t hover:bg-muted/25">
+                    <td className="px-4 py-3">
+                      <div>
+                        <div className="text-sm font-medium">{candidate.fullName}</div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm">{candidate.email}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        candidate.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        candidate.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {candidate.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewCandidate(candidate)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditCandidate(candidate)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteCandidate(candidate)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Pagination: Page controls at bottom */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <select className="px-3 py-2 border rounded-md text-sm">
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            <span className="text-sm text-muted-foreground">
-              Showing 1 to {filteredCandidates.length} of {filteredCandidates.length} entries
-            </span>
+          {/* Pagination: Page controls at bottom */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <select className="px-3 py-2 border rounded-md text-sm">
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              <span className="text-sm text-muted-foreground">
+                Showing 1 to {filteredCandidates.length} of {filteredCandidates.length} entries
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" disabled>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </Button>
+              <span className="text-sm text-muted-foreground">Page 1 of 1</span>
+              <Button variant="outline" size="sm" disabled>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Button>
+            </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Button>
-            <span className="text-sm text-muted-foreground">Page 1 of 1</span>
-            <Button variant="outline" size="sm" disabled>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
