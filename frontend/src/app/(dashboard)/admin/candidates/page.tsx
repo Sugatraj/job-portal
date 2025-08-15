@@ -11,14 +11,16 @@ import { candidatesService } from '@/lib/services/candidatesService';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { CandidateProfile } from '@/components/candidates/candidate-profile';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export default function CandidatesPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'profile'>('list');
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     console.log('CandidatesPage: User role:', user?.role);
@@ -79,30 +81,39 @@ export default function CandidatesPage() {
   // Ensure candidates is always an array before filtering
   const validCandidates = Array.isArray(candidates) ? candidates : [];
   
+  // Apply search and status filters
   const filteredCandidates = validCandidates.filter(candidate => {
     // Safety check: ensure candidate is valid
     if (!candidate || typeof candidate !== 'object') {
-      console.warn('CandidatesPage: Invalid candidate found:', candidate);
       return false;
     }
     
     // Safety check: ensure required properties exist
     if (!candidate.fullName) {
-      console.warn('CandidatesPage: Candidate missing fullName:', candidate);
       return false;
     }
     
-    const searchTermLower = searchTerm.toLowerCase();
+    // Status filter
+    if (statusFilter !== 'all' && candidate.status !== statusFilter) {
+      return false;
+    }
     
-    // Safely check each property with null/undefined checks
-    const nameMatch = candidate.fullName?.toLowerCase().includes(searchTermLower) || false;
-    const titleMatch = candidate.profileTitle?.toLowerCase().includes(searchTermLower) || false;
-    const skillsMatch = candidate.primarySkills?.some(skill => 
-      skill.toLowerCase().includes(searchTermLower)
-    ) || false;
-    const locationMatch = candidate.location?.toLowerCase().includes(searchTermLower) || false;
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const nameMatch = candidate.fullName.toLowerCase().includes(searchLower);
+      const titleMatch = candidate.profileTitle?.toLowerCase().includes(searchLower) || false;
+      const skillsMatch = candidate.primarySkills?.some(skill => 
+        skill.toLowerCase().includes(searchLower)
+      ) || false;
+      const locationMatch = candidate.location?.toLowerCase().includes(searchLower) || false;
+      
+      if (!nameMatch && !titleMatch && !skillsMatch && !locationMatch) {
+        return false;
+      }
+    }
     
-    return nameMatch || titleMatch || skillsMatch || locationMatch;
+    return true;
   });
 
   const handleAddCandidate = () => {
@@ -135,16 +146,6 @@ export default function CandidatesPage() {
         alert('Failed to delete candidate');
       }
     }
-  };
-
-  const handleStatusFilter = () => {
-    // TODO: Implement status filter functionality
-    console.log('Status filter clicked');
-  };
-
-  const handlePriorityFilter = () => {
-    // TODO: Implement priority filter functionality
-    console.log('Priority filter clicked');
   };
 
   const handleBackToDashboard = () => {
@@ -196,39 +197,123 @@ export default function CandidatesPage() {
 
   // Show candidates list view
   return (
-    <div className="space-y-6">
-      {/* Navigation Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={handleBackToDashboard}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Button>
-      </div>
+    <Card>
+      <CardHeader>
+        {/* Header Row: Back | Title | Create (all in one line) */}
+        <div className="flex items-center justify-between">
+          <Button variant="outline" onClick={handleBackToDashboard}>
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          
+          <h1 className="text-3xl font-bold tracking-tight">Candidates</h1>
+          
+          <Button onClick={handleAddCandidate}>
+            Create
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-6">
 
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Candidates</h1>
-        <p className="text-muted-foreground">
-          Overview of job candidates. Click "View Profile" to see detailed information, experience, and documents.
-        </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Current user: {user?.name} ({user?.role})
-        </p>
-      </div>
+        {/* Table: Clean data display */}
+        <div className="border rounded-lg">
+          <table className="w-full">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCandidates.map((candidate) => (
+                <tr key={candidate.id} className="border-t hover:bg-muted/25">
+                  <td className="px-4 py-3">
+                    <div>
+                      <div className="font-medium">{candidate.fullName}</div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">{candidate.email}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      candidate.status === 'approved' ? 'bg-green-100 text-green-800' :
+                      candidate.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {candidate.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleViewCandidate(candidate)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditCandidate(candidate)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteCandidate(candidate)}
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      <DataTable
-        data={filteredCandidates}
-        columns={candidatesColumns}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Search candidates by name, profile title, skills, or location..."
-        onAddClick={handleAddCandidate}
-        onStatusFilter={handleStatusFilter}
-        onPriorityFilter={handlePriorityFilter}
-        addButtonText="Add Candidate"
-        statusFilterText="Status"
-        priorityFilterText="Priority"
-        emptyMessage={validCandidates.length === 0 ? "Loading candidates..." : "No candidates found matching your criteria."}
-      />
-    </div>
+        {/* Pagination: Page controls at bottom */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <select className="px-3 py-2 border rounded-md text-sm">
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span className="text-sm text-muted-foreground">
+              Showing 1 to {filteredCandidates.length} of {filteredCandidates.length} entries
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" disabled>
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Button>
+            <span className="text-sm text-muted-foreground">Page 1 of 1</span>
+            <Button variant="outline" size="sm" disabled>
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
