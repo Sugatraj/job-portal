@@ -12,6 +12,7 @@ import { ArrowLeft, Home } from 'lucide-react';
 import { CandidateProfile } from '@/components/candidates/candidate-profile';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { PageHeader } from '@/components/forms';
 
 export default function CandidatesPage() {
   const { user } = useAuth();
@@ -202,19 +203,14 @@ export default function CandidatesPage() {
 
       <Card>
         <CardHeader>
-          {/* Header Row: Back | Title | Create (all in one line) */}
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={handleBackToDashboard}>
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-            
-            <h1 className="text-2xl font-bold tracking-tight">Candidates</h1>
-            
-            <Button onClick={handleAddCandidate}>
-              Create
-            </Button>
-          </div>
+          <PageHeader
+            title="Candidates"
+            onBack={handleBackToDashboard}
+            actionButton={{
+              text: "Create",
+              onClick: handleAddCandidate
+            }}
+          />
         </CardHeader>
       
         <CardContent className="space-y-6">

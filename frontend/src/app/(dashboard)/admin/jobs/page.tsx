@@ -9,8 +9,11 @@ import { createJobsColumns, Job } from '@/components/jobs/jobs-columns';
 import { mockJobs } from '@/lib/mock/jobs';
 import { jobsService } from '@/lib/services/jobsService';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Home } from 'lucide-react';
 import { JobProfile } from '@/components/jobs/job-profile';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { PageHeader } from '@/components/forms';
 
 export default function AdminJobsPage() {
   const { user } = useAuth();
@@ -155,39 +158,49 @@ export default function AdminJobsPage() {
 
   // Show jobs list view
   return (
-    <div className="space-y-6">
-      {/* Navigation Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={handleBackToDashboard}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Button>
-      </div>
-
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Jobs Management</h1>
-        <p className="text-muted-foreground">
-          Manage job postings. Create new jobs, edit existing ones, and monitor applications.
-        </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Current user: {user?.name} ({user?.role})
-        </p>
-      </div>
-
-      <DataTable
-        data={filteredJobs}
-        columns={jobsColumns}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Search jobs by title, company, category, or location..."
-        onAddClick={handleAddJob}
-        onStatusFilter={handleStatusFilter}
-        onPriorityFilter={handleCategoryFilter}
-        addButtonText="Add Job"
-        statusFilterText="Status"
-        priorityFilterText="Category"
-        emptyMessage="No jobs found matching your criteria."
+    <div className="space-y-4">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          { href: ROUTES.admin.dashboard, label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
+          { href: ROUTES.admin.jobs, label: 'Jobs' },
+        ]}
       />
+
+      <Card>
+        <CardHeader>
+          <PageHeader
+            title="Jobs Management"
+            onBack={handleBackToDashboard}
+            actionButton={{
+              text: "Add Job",
+              onClick: handleAddJob,
+              icon: <Plus className="mr-2 h-4 w-4" />
+            }}
+          />
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          <p className="text-muted-foreground">
+            Manage job postings. Create new jobs, edit existing ones, and monitor applications.
+          </p>
+          
+          <DataTable
+            data={filteredJobs}
+            columns={jobsColumns}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder="Search jobs by title, company, category, or location..."
+            onAddClick={handleAddJob}
+            onStatusFilter={handleStatusFilter}
+            onPriorityFilter={handleCategoryFilter}
+            addButtonText="Add Job"
+            statusFilterText="Status"
+            priorityFilterText="Category"
+            emptyMessage="No jobs found matching your criteria."
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }
