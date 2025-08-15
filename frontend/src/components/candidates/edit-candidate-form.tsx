@@ -1,47 +1,77 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, User, Loader2 } from 'lucide-react';
-import { CreateCandidateData, candidatesService } from '@/lib/services/candidatesService';
-import { Candidate } from '@/components/candidates/candidates-columns';
-import { Toast } from '@/components/ui/toast';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowLeft, Save, UserPlus, Loader2, Eye, EyeOff } from "lucide-react";
+import { CreateCandidateData, candidatesService } from "@/lib/services/candidatesService";
+import { Candidate } from "@/components/candidates/candidates-columns";
+import { Toast } from "@/components/ui/toast";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { ROUTES } from "@/lib/constants";
+import { Home } from "lucide-react";
 
 interface EditCandidateFormProps {
   onCancel: () => void;
   onSuccess: () => void;
 }
 
-export function EditCandidateForm({ onCancel, onSuccess }: EditCandidateFormProps) {
+export function EditCandidateForm({
+  onCancel,
+  onSuccess,
+}: EditCandidateFormProps) {
   const params = useParams();
   const candidateId = params?.id as string;
   
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState<CreateCandidateData>({
-    title: '',
-    description: '',
-    category: '',
-    priority: 'medium',
-    status: 'pending'
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    location: "",
+    city: "",
+    pincode: "",
+    password: "",
+    profileTitle: "",
+    currentJobStatus: "employed",
+    primarySkills: [],
+    skillProficiencyLevel: "intermediate",
+    preferredJobType: "full-time",
+    expectedSalary: "",
+    status: "pending",
+    priority: "medium",
   });
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [candidate, setCandidate] = useState<Candidate | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const loadCandidate = async () => {
       if (!candidateId) {
-        setError('No candidate ID provided');
+        setError("No candidate ID provided");
         setIsLoading(false);
         return;
       }
@@ -50,23 +80,35 @@ export function EditCandidateForm({ onCancel, onSuccess }: EditCandidateFormProp
         const candidateData = candidatesService.getCandidateById(candidateId);
         
         if (!candidateData) {
-          setError('Candidate not found');
+          setError("Candidate not found");
           setIsLoading(false);
           return;
         }
 
         setCandidate(candidateData);
         setFormData({
-          title: candidateData.title,
-          description: candidateData.description,
-          category: candidateData.category,
-          priority: candidateData.priority,
-          status: candidateData.status
+          fullName: candidateData.fullName || "",
+          email: candidateData.email || "",
+          phoneNumber: candidateData.phoneNumber || "",
+          dateOfBirth: candidateData.dateOfBirth || "",
+          gender: candidateData.gender || "male",
+          location: candidateData.location || "",
+          city: candidateData.city || "",
+          pincode: candidateData.pincode || "",
+          password: candidateData.password || "",
+          profileTitle: candidateData.profileTitle || "",
+          currentJobStatus: candidateData.currentJobStatus || "employed",
+          primarySkills: candidateData.primarySkills || [],
+          skillProficiencyLevel: candidateData.skillProficiencyLevel || "intermediate",
+          preferredJobType: candidateData.preferredJobType || "full-time",
+          expectedSalary: candidateData.expectedSalary || "",
+          status: candidateData.status || "pending",
+          priority: candidateData.priority || "medium",
         });
+        setIsLoading(false);
       } catch (error) {
-        console.error('Error loading candidate:', error);
-        setError('Failed to load candidate data');
-      } finally {
+        console.error("Error loading candidate:", error);
+        setError("Failed to load candidate data");
         setIsLoading(false);
       }
     };
@@ -80,42 +122,50 @@ export function EditCandidateForm({ onCancel, onSuccess }: EditCandidateFormProp
 
     try {
       if (!candidateId) {
-        throw new Error('No candidate ID');
+        throw new Error("No candidate ID");
       }
 
+      // Update the candidate
       const updatedCandidate = candidatesService.updateCandidate(candidateId, formData);
       
       if (!updatedCandidate) {
-        throw new Error('Failed to update candidate');
+        throw new Error("Failed to update candidate");
       }
 
       // Show success toast
-      setToastMessage('Candidate updated successfully!');
-      setToastType('success');
+      setToastMessage("Candidate updated successfully!");
+      setToastType("success");
       setShowToast(true);
-      
+
       // Redirect after a short delay
       setTimeout(() => {
         onSuccess();
       }, 1500);
-          } catch (error) {
-        console.error('Error updating candidate:', error);
-        setToastMessage('Failed to update candidate. Please try again.');
-        setToastType('error');
-        setShowToast(true);
-      } finally {
-        setIsSubmitting(false);
-      }
+    } catch (error) {
+      console.error("Error updating candidate:", error);
+      setToastMessage("Failed to update candidate. Please try again.");
+      setToastType("error");
+      setShowToast(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleInputChange = (field: keyof CreateCandidateData, value: string) => {
-    setFormData(prev => ({
+  const handleInputChange = (field: keyof CreateCandidateData, value: any) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const isFormValid = formData.title.trim() && formData.description.trim() && formData.category.trim();
+  const isFormValid =
+    formData.fullName?.trim() &&
+    formData.email?.trim() &&
+    formData.phoneNumber?.trim() &&
+    formData.location?.trim() &&
+    formData.city?.trim() &&
+    formData.pincode?.trim() &&
+    formData.password?.trim();
 
   if (isLoading) {
     return (
@@ -157,163 +207,247 @@ export function EditCandidateForm({ onCancel, onSuccess }: EditCandidateFormProp
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Toast Notification */}
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          onClose={() => setShowToast(false)}
-        />
-      )}
-      
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={onCancel} size="sm">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Candidates
-        </Button>
-      </div>
+    <div className="w-full space-y-4">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          {
+            href: ROUTES.admin.dashboard,
+            label: "Dashboard",
+            icon: <Home className="h-4 w-4" />,
+          },
+          { href: ROUTES.admin.candidates, label: "Candidates" },
+          { label: "Edit" },
+        ]}
+      />
 
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Edit Candidate</h1>
-        <p className="text-muted-foreground">
-          Update candidate profile information.
-        </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Editing: {candidate.title}
-        </p>
-      </div>
-
-      {/* Form */}
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Candidate Information
-          </CardTitle>
-          <CardDescription>
-            Update the candidate's profile information as needed.
-          </CardDescription>
+          {/* Header Row: Back | Title | Update (all in one line) */}
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={onCancel} size="sm">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+
+            <h1 className="text-2xl font-bold tracking-tight">
+              Edit Candidate
+            </h1>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
+              className={`min-w-[120px] ${
+                isFormValid
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-400 hover:bg-gray-500 text-dark"
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Update
+                </>
+              )}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Full Name *</Label>
-              <Input
-                id="title"
-                placeholder="Enter candidate's full name"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                required
-              />
+          {/* Toast Notification */}
+          {showToast && (
+            <Toast
+              message={toastMessage}
+              type={toastType}
+              onClose={() => setShowToast(false)}
+            />
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <Label htmlFor="fullName" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Full Name
+                </Label>
+                <Input
+                  id="fullName"
+                  placeholder="Enter candidate's full name"
+                  value={formData.fullName || ""}
+                  onChange={(e) =>
+                    handleInputChange("fullName", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="dateOfBirth" className="mb-2 block">
+                  Date of Birth
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth || ""}
+                  onChange={(e) =>
+                    handleInputChange("dateOfBirth", e.target.value)
+                  }
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter email address"
+                  value={formData.email || ""}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="gender" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Gender
+                </Label>
+                <Select
+                  value={formData.gender || ""}
+                  onValueChange={(value) => handleInputChange("gender", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer-not-to-say">
+                      Prefer not to say
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="phoneNumber" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Phone Number
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="Enter 10-digit phone number"
+                  value={formData.phoneNumber || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow digits and limit to 10 characters
+                    if (/^\d{0,10}$/.test(value)) {
+                      handleInputChange("phoneNumber", value);
+                    }
+                  }}
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  title="Phone number must be 10 digits starting with 6, 7, 8, or 9"
+                  required
+                />
+                {formData.phoneNumber &&
+                  formData.phoneNumber.length === 10 &&
+                  !/^[6-9]/.test(formData.phoneNumber) && (
+                    <p className="text-red-500 text-xs mt-1">
+                      Phone number must start with 6, 7, 8, or 9
+                    </p>
+                  )}
+              </div>
+
+              <div>
+                <Label htmlFor="location" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Location
+                </Label>
+                <Input
+                  id="location"
+                  placeholder="Enter city/location"
+                  value={formData.location || ""}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="city" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>City
+                </Label>
+                <Input
+                  id="city"
+                  placeholder="Enter city"
+                  value={formData.city || ""}
+                  onChange={(e) => handleInputChange("city", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="pincode" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Pincode
+                </Label>
+                <Input
+                  id="pincode"
+                  type="text"
+                  placeholder="Enter pincode"
+                  value={formData.pincode || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow digits and limit to 6 characters (standard pincode length)
+                    if (/^\d{0,6}$/.test(value)) {
+                      handleInputChange("pincode", value);
+                    }
+                  }}
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                  title="Pincode must be 6 digits"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={formData.password || ""}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-500" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-500" />
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Professional Summary *</Label>
-              <Textarea
-                id="description"
-                placeholder="Brief description of skills, experience, and background"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                rows={3}
-                required
-              />
-            </div>
-
-            {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="category">Job Category *</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => handleInputChange('category', value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Frontend">Frontend Development</SelectItem>
-                  <SelectItem value="Backend">Backend Development</SelectItem>
-                  <SelectItem value="Full Stack">Full Stack Development</SelectItem>
-                  <SelectItem value="Design">UI/UX Design</SelectItem>
-                  <SelectItem value="Product">Product Management</SelectItem>
-                  <SelectItem value="DevOps">DevOps</SelectItem>
-                  <SelectItem value="Data">Data Science</SelectItem>
-                  <SelectItem value="Marketing">Marketing</SelectItem>
-                  <SelectItem value="Sales">Sales</SelectItem>
-                  <SelectItem value="HR">Human Resources</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Priority */}
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority Level</Label>
-              <Select
-                value={formData.priority}
-                onValueChange={(value) => handleInputChange('priority', value as 'low' | 'medium' | 'high')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Status */}
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => handleInputChange('status', value as 'pending' | 'approved' | 'rejected')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending Review</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={!isFormValid || isSubmitting}
-                className="min-w-[120px]"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Update Candidate
-                  </>
-                )}
-              </Button>
-            </div>
+            {/* Form Actions - Removed since Update button is in header */}
           </form>
         </CardContent>
       </Card>

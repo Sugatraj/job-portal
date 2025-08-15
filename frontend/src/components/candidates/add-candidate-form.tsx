@@ -298,9 +298,19 @@ export function AddCandidateForm({
                 </Label>
                 <Input
                   id="pincode"
+                  type="text"
                   placeholder="Enter pincode"
                   value={formData.pincode || ""}
-                  onChange={(e) => handleInputChange("pincode", e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow digits and limit to 6 characters (standard pincode length)
+                    if (/^\d{0,6}$/.test(value)) {
+                      handleInputChange("pincode", value);
+                    }
+                  }}
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                  title="Pincode must be 6 digits"
                   required
                 />
               </div>
