@@ -1,47 +1,62 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, UserPlus } from 'lucide-react';
-import { CreateCandidateData } from '@/lib/services/candidatesService';
-import { Toast } from '@/components/ui/toast';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { ROUTES } from '@/lib/constants';
-import { Home } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowLeft, Save, UserPlus } from "lucide-react";
+import { CreateCandidateData } from "@/lib/services/candidatesService";
+import { Toast } from "@/components/ui/toast";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { ROUTES } from "@/lib/constants";
+import { Home } from "lucide-react";
 
 interface AddCandidateFormProps {
   onCancel: () => void;
   onSuccess: () => void;
 }
 
-export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps) {
+export function AddCandidateForm({
+  onCancel,
+  onSuccess,
+}: AddCandidateFormProps) {
   const [formData, setFormData] = useState<CreateCandidateData>({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    location: '',
-    city: '',
-    pincode: '',
-    password: '',
-    profileTitle: '',
-    currentJobStatus: 'employed',
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    location: "",
+    city: "",
+    pincode: "",
+    password: "",
+    profileTitle: "",
+    currentJobStatus: "employed",
     primarySkills: [],
-    skillProficiencyLevel: 'intermediate',
-    preferredJobType: 'full-time',
-    expectedSalary: '',
-    status: 'pending',
-    priority: 'medium'
+    skillProficiencyLevel: "intermediate",
+    preferredJobType: "full-time",
+    expectedSalary: "",
+    status: "pending",
+    priority: "medium",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,24 +64,26 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
 
     try {
       // Import the service dynamically to avoid SSR issues
-      const { candidatesService } = await import('@/lib/services/candidatesService');
-      
+      const { candidatesService } = await import(
+        "@/lib/services/candidatesService"
+      );
+
       // Create the candidate
       candidatesService.createCandidate(formData);
-      
+
       // Show success toast
-      setToastMessage('Candidate created successfully!');
-      setToastType('success');
+      setToastMessage("Candidate created successfully!");
+      setToastType("success");
       setShowToast(true);
-      
+
       // Redirect after a short delay
       setTimeout(() => {
         onSuccess();
       }, 1500);
     } catch (error) {
-      console.error('Error creating candidate:', error);
-      setToastMessage('Failed to create candidate. Please try again.');
-      setToastType('error');
+      console.error("Error creating candidate:", error);
+      setToastMessage("Failed to create candidate. Please try again.");
+      setToastType("error");
       setShowToast(true);
     } finally {
       setIsSubmitting(false);
@@ -74,22 +91,33 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
   };
 
   const handleInputChange = (field: keyof CreateCandidateData, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const isFormValid = formData.fullName?.trim() && formData.email?.trim() && formData.phoneNumber?.trim() && formData.location?.trim() && formData.city?.trim() && formData.pincode?.trim() && formData.password?.trim();
+  const isFormValid =
+    formData.fullName?.trim() &&
+    formData.email?.trim() &&
+    formData.phoneNumber?.trim() &&
+    formData.location?.trim() &&
+    formData.city?.trim() &&
+    formData.pincode?.trim() &&
+    formData.password?.trim();
 
   return (
     <div className="w-full space-y-4">
       {/* Breadcrumb Navigation */}
       <Breadcrumb
         items={[
-          { href: ROUTES.admin.dashboard, label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
-          { href: ROUTES.admin.candidates, label: 'Candidates' },
-          { label: 'Add New' },
+          {
+            href: ROUTES.admin.dashboard,
+            label: "Dashboard",
+            icon: <Home className="h-4 w-4" />,
+          },
+          { href: ROUTES.admin.candidates, label: "Candidates" },
+          { label: "Add New" },
         ]}
       />
 
@@ -101,13 +129,19 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            
-            <h1 className="text-2xl font-bold tracking-tight">Add New Candidate</h1>
-            
-            <Button 
-              onClick={handleSubmit} 
-              disabled={!isFormValid || isSubmitting} 
-              className={`min-w-[120px] ${isFormValid ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+
+            <h1 className="text-2xl font-bold tracking-tight">
+              Add New Candidate
+            </h1>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
+              className={`min-w-[120px] ${
+                isFormValid
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-400 hover:bg-gray-500 text-dark"
+              }`}
             >
               {isSubmitting ? (
                 <>
@@ -142,41 +176,49 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                 <Input
                   id="fullName"
                   placeholder="Enter candidate's full name"
-                  value={formData.fullName || ''}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  value={formData.fullName || ""}
+                  onChange={(e) =>
+                    handleInputChange("fullName", e.target.value)
+                  }
                   required
                 />
               </div>
-              
+
               <div>
-                <Label htmlFor="dateOfBirth" className="mb-2 block">Date of Birth</Label>
+                <Label htmlFor="dateOfBirth" className="mb-2 block">
+                  Date of Birth
+                </Label>
                 <Input
                   id="dateOfBirth"
                   type="date"
-                  value={formData.dateOfBirth || ''}
-                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  value={formData.dateOfBirth || ""}
+                  onChange={(e) =>
+                    handleInputChange("dateOfBirth", e.target.value)
+                  }
                 />
               </div>
 
-<div>
-  <Label htmlFor="email" className="mb-2 block">
-    <span className="text-red-500 mr-1">*</span>Email Address
-  </Label>
-  <Input
-    id="email"
-    type="email"
-    placeholder="Enter email address"
-    value={formData.email || ''}
-    onChange={(e) => handleInputChange('email', e.target.value)}
-    required
-  />
-</div>
-              
               <div>
-                <Label htmlFor="gender" className="mb-2 block">Gender</Label>
+                <Label htmlFor="email" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter email address"
+                  value={formData.email || ""}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="gender" className="mb-2 block">
+                  <span className="text-red-500 mr-1">*</span>Gender
+                </Label>
                 <Select
-                  value={formData.gender || ''}
-                  onValueChange={(value) => handleInputChange('gender', value)}
+                  value={formData.gender || ""}
+                  onValueChange={(value) => handleInputChange("gender", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
@@ -185,11 +227,13 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                     <SelectItem value="male">Male</SelectItem>
                     <SelectItem value="female">Female</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                    <SelectItem value="prefer-not-to-say">
+                      Prefer not to say
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <Label htmlFor="phoneNumber" className="mb-2 block">
                   <span className="text-red-500 mr-1">*</span>Phone Number
@@ -198,12 +242,12 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                   id="phoneNumber"
                   type="tel"
                   placeholder="Enter 10-digit phone number"
-                  value={formData.phoneNumber || ''}
+                  value={formData.phoneNumber || ""}
                   onChange={(e) => {
                     const value = e.target.value;
                     // Only allow digits and limit to 10 characters
                     if (/^\d{0,10}$/.test(value)) {
-                      handleInputChange('phoneNumber', value);
+                      handleInputChange("phoneNumber", value);
                     }
                   }}
                   maxLength={10}
@@ -211,11 +255,15 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                   title="Phone number must be 10 digits starting with 6, 7, 8, or 9"
                   required
                 />
-                {formData.phoneNumber && formData.phoneNumber.length === 10 && !/^[6-9]/.test(formData.phoneNumber) && (
-                  <p className="text-red-500 text-xs mt-1">Phone number must start with 6, 7, 8, or 9</p>
-                )}
+                {formData.phoneNumber &&
+                  formData.phoneNumber.length === 10 &&
+                  !/^[6-9]/.test(formData.phoneNumber) && (
+                    <p className="text-red-500 text-xs mt-1">
+                      Phone number must start with 6, 7, 8, or 9
+                    </p>
+                  )}
               </div>
-              
+
               <div>
                 <Label htmlFor="location" className="mb-2 block">
                   <span className="text-red-500 mr-1">*</span>Location
@@ -223,12 +271,14 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                 <Input
                   id="location"
                   placeholder="Enter city/location"
-                  value={formData.location || ''}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  value={formData.location || ""}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
                   required
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="city" className="mb-2 block">
                   <span className="text-red-500 mr-1">*</span>City
@@ -236,8 +286,8 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                 <Input
                   id="city"
                   placeholder="Enter city"
-                  value={formData.city || ''}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  value={formData.city || ""}
+                  onChange={(e) => handleInputChange("city", e.target.value)}
                   required
                 />
               </div>
@@ -249,8 +299,8 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                 <Input
                   id="pincode"
                   placeholder="Enter pincode"
-                  value={formData.pincode || ''}
-                  onChange={(e) => handleInputChange('pincode', e.target.value)}
+                  value={formData.pincode || ""}
+                  onChange={(e) => handleInputChange("pincode", e.target.value)}
                   required
                 />
               </div>
@@ -263,8 +313,10 @@ export function AddCandidateForm({ onCancel, onSuccess }: AddCandidateFormProps)
                   id="password"
                   type="password"
                   placeholder="Enter password"
-                  value={formData.password || ''}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  value={formData.password || ""}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   required
                 />
               </div>
