@@ -8,11 +8,19 @@ import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
 import { Users, Briefcase, Building2, TrendingUp, FileText } from 'lucide-react';
 import { Loading, LoadingGrid, LoadingCard } from '@/components/ui/loading';
+import { candidatesService } from '@/lib/services/candidatesService';
+import { jobsService } from '@/lib/services/jobsService';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalCandidates: 0,
+    activeJobs: 0,
+    totalApplications: 0,
+    growth: 0
+  });
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -20,8 +28,25 @@ export default function AdminDashboard() {
       return;
     }
     
+    // Get real-time stats
+    const loadStats = () => {
+      const candidatesStats = candidatesService.getCandidatesStats();
+      const jobsStats = jobsService.getJobsStats();
+      
+      setStats({
+        totalCandidates: candidatesStats.total,
+        activeJobs: jobsStats.byStatus.active,
+        totalApplications: jobsStats.totalApplications,
+        growth: Math.round((candidatesStats.byStatus.approved / Math.max(candidatesStats.total, 1)) * 100)
+      });
+    };
+
     // Simulate loading time for better UX
-    const timer = setTimeout(() => setIsLoading(false), 500);
+    const timer = setTimeout(() => {
+      loadStats();
+      setIsLoading(false);
+    }, 500);
+    
     return () => clearTimeout(timer);
   }, [user, router]);
 
@@ -68,8 +93,10 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            <div className="text-2xl font-bold">{stats.totalCandidates}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalCandidates > 0 ? '+2 from last month' : 'No candidates yet'}
+            </p>
           </CardContent>
         </Card>
 
@@ -79,30 +106,36 @@ export default function AdminDashboard() {
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">+1 from last week</p>
+            <div className="text-2xl font-bold">{stats.activeJobs}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.activeJobs > 0 ? '+1 from last week' : 'No active jobs'}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Applications</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground">+12 from yesterday</p>
+            <div className="text-2xl font-bold">{stats.totalApplications}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalApplications > 0 ? '+12 from yesterday' : 'No applications yet'}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Growth</CardTitle>
+            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">+12.5%</div>
-            <p className="text-xs text-muted-foreground">+2.1% from last month</p>
+            <div className="text-2xl font-bold text-green-600">{stats.growth}%</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.growth > 0 ? 'Candidates approved' : 'No approvals yet'}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -123,10 +156,7 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <Button 
                 className="w-full" 
-                onClick={() => {
-                  console.log('Navigating to candidates page:', ROUTES.admin.candidates);
-                  router.push(ROUTES.admin.candidates);
-                }}
+                onClick={() => router.push(ROUTES.admin.candidates)}
               >
                 Go to Candidates
               </Button>
@@ -151,10 +181,7 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <Button 
                 className="w-full"
-                onClick={() => {
-                  console.log('Navigating to jobs page:', ROUTES.admin.jobs);
-                  router.push(ROUTES.admin.jobs);
-                }}
+                onClick={() => router.push(ROUTES.admin.jobs)}
               >
                 Go to Jobs
               </Button>

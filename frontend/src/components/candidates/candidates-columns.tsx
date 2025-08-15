@@ -14,12 +14,54 @@ import {
 
 export interface Candidate {
   id: string;
-  title: string;
-  description: string;
-  category: string;
-  priority: 'low' | 'medium' | 'high';
+  // Admin-Required Fields (for account creation)
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth?: string; // optional
+  gender?: 'male' | 'female' | 'other' | 'prefer-not-to-say'; // optional
+  location: string;
+  city: string;
+  pincode: string;
+  password: string; // for login
+  
+  // Candidate Self-Update Fields (can be updated later)
+  profileTitle?: string;
+  currentJobStatus?: 'employed' | 'unemployed' | 'student';
+  totalExperience?: {
+    years: number;
+    months: number;
+  };
+  currentEmployer?: string;
+  currentJobTitle?: string;
+  primarySkills?: string[];
+  secondarySkills?: string[];
+  skillProficiencyLevel?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  certifications?: string[];
+  highestQualification?: string;
+  specialization?: string;
+  university?: string;
+  yearOfPassing?: number;
+  grades?: string;
+  preferredJobType?: 'full-time' | 'part-time' | 'internship' | 'remote';
+  preferredIndustry?: string;
+  preferredRoles?: string[];
+  expectedSalary?: string;
+  workModePreference?: 'on-site' | 'hybrid' | 'remote';
+  noticePeriod?: string;
+  linkedinUrl?: string;
+  portfolioUrl?: string;
+  languages?: Array<{
+    language: string;
+    proficiency: 'basic' | 'conversational' | 'fluent' | 'native';
+  }>;
+  workAuthorization?: string;
+  
+  // System Fields
   status: 'pending' | 'approved' | 'rejected';
+  priority: 'low' | 'medium' | 'high';
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface CandidatesColumnsProps {
@@ -57,7 +99,7 @@ export const createCandidatesColumns = ({
     ),
   },
   {
-    id: 'title',
+    id: 'fullName',
     header: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -89,17 +131,53 @@ export const createCandidatesColumns = ({
     ),
     cell: ({ row }: any) => (
       <div className="space-y-1">
-        <div className="font-medium">{row.getValue('title')}</div>
+        <div className="font-medium">{row.getValue('fullName')}</div>
         <div className="text-sm text-muted-foreground max-w-[200px] truncate">
-          {row.original.description}
+          {row.original.email}
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {row.original.location}, {row.original.city}
         </div>
       </div>
     ),
   },
-  createBadgeColumn('category', 'Category'),
-  createPriorityColumn('priority', 'Priority'),
-  createStatusColumn('status', 'Status'),
-  createDateColumn('createdAt', 'Applied'),
+  createBadgeColumn('status', 'Status'),
+  createBadgeColumn('priority', 'Priority'),
+  {
+    id: 'phoneNumber',
+    header: 'Contact',
+    cell: ({ row }: any) => (
+      <div className="text-sm">
+        <div>{row.original.phoneNumber}</div>
+        <div className="text-muted-foreground">{row.original.email}</div>
+      </div>
+    ),
+  },
+  {
+    id: 'primarySkills',
+    header: 'Skills',
+    cell: ({ row }: any) => (
+      <div className="text-sm">
+        {row.original.primarySkills && row.original.primarySkills.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {row.original.primarySkills.slice(0, 2).map((skill: string, index: number) => (
+              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                {skill}
+              </span>
+            ))}
+            {row.original.primarySkills.length > 2 && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                +{row.original.primarySkills.length - 2}
+              </span>
+            )}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">No skills added</span>
+        )}
+      </div>
+    ),
+  },
+  createDateColumn('createdAt', 'Created'),
   {
     id: 'actions',
     header: 'Actions',
