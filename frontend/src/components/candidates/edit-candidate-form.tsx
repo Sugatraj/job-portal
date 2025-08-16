@@ -70,6 +70,8 @@ export function EditCandidateForm({
 
   useEffect(() => {
     const loadCandidate = async () => {
+      console.log('EditCandidateForm: Loading candidate with ID:', candidateId);
+      
       if (!candidateId) {
         setError("No candidate ID provided");
         setIsLoading(false);
@@ -78,6 +80,7 @@ export function EditCandidateForm({
 
       try {
         const candidateData = candidatesService.getCandidateById(candidateId);
+        console.log('EditCandidateForm: Loaded candidate data:', candidateData);
         
         if (!candidateData) {
           setError("Candidate not found");
@@ -105,6 +108,7 @@ export function EditCandidateForm({
           status: candidateData.status || "pending",
           priority: candidateData.priority || "medium",
         });
+        console.log('EditCandidateForm: Form data set:', formData);
         setIsLoading(false);
       } catch (error) {
         console.error("Error loading candidate:", error);
@@ -116,8 +120,8 @@ export function EditCandidateForm({
     loadCandidate();
   }, [candidateId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setIsSubmitting(true);
 
     try {
@@ -158,14 +162,10 @@ export function EditCandidateForm({
     }));
   };
 
-  const isFormValid =
+  const isFormValid = Boolean(
     formData.fullName?.trim() &&
-    formData.email?.trim() &&
-    formData.phoneNumber?.trim() &&
-    formData.location?.trim() &&
-    formData.city?.trim() &&
-    formData.pincode?.trim() &&
-    formData.password?.trim();
+    formData.email?.trim()
+  );
 
   if (isLoading) {
     return (

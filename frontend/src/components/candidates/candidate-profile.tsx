@@ -65,52 +65,52 @@ export function CandidateProfile({
               {candidate.profileTitle && (
                 <>
                   <div className="space-y-2">
-                    <span className="text-sm font-medium text-muted-foreground">Full Name</span>
                     <div className="text-xl font-semibold">{candidate.fullName}</div>
+                    <span className="text-sm font-medium text-muted-foreground">Full Name</span>
                   </div>
                   <div className="space-y-2">
-                    <span className="text-sm font-medium text-muted-foreground">Profile Title</span>
                     <div className="text-base">{candidate.profileTitle}</div>
+                    <span className="text-sm font-medium text-muted-foreground">Profile Title</span>
                   </div>
                   <div className="space-y-2">
-                    <span className="text-sm font-medium text-muted-foreground">Status</span>
                     <Badge variant={candidate.status === 'approved' ? 'default' : candidate.status === 'rejected' ? 'destructive' : 'secondary'}>
                       {candidate.status}
                     </Badge>
+                    <span className="text-sm font-medium text-muted-foreground">Status</span>
                   </div>
                 </>
               )}
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Email</span>
                 <div className="text-base">{candidate.email}</div>
+                <span className="text-sm font-medium text-muted-foreground">Email</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Phone</span>
                 <div className="text-base">{candidate.phoneNumber}</div>
+                <span className="text-sm font-medium text-muted-foreground">Phone</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Location</span>
                 <div className="text-base">{candidate.city}, {candidate.location}</div>
+                <span className="text-sm font-medium text-muted-foreground">Location</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Gender</span>
                 <div className="text-base">{candidate.gender || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Gender</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Date of Birth</span>
                 <div className="text-base">{candidate.dateOfBirth || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Date of Birth</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Work Authorization</span>
                 <div className="text-base">{candidate.workAuthorization || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Work Authorization</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Notice Period</span>
                 <div className="text-base">{candidate.noticePeriod || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Notice Period</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Applied Date</span>
                 <div className="text-base">{new Date(candidate.createdAt).toLocaleDateString()}</div>
+                <span className="text-sm font-medium text-muted-foreground">Applied Date</span>
               </div>
             </div>
           </CardContent>
@@ -124,39 +124,39 @@ export function CandidateProfile({
           <CardContent className="pt-0">
             <div className="grid grid-cols-4 gap-6">
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Job Status</span>
                 <Badge variant="secondary">{candidate.currentJobStatus || 'Not specified'}</Badge>
+                <span className="text-sm font-medium text-muted-foreground">Job Status</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Current Employer</span>
                 <div className="text-base">{candidate.currentEmployer || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Current Employer</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Job Title</span>
                 <div className="text-base">{candidate.currentJobTitle || 'Not specified'}</div>
+                <span className="text-sm font-medium text-muted-foreground">Job Title</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Work Mode</span>
                 <Badge variant="secondary">{candidate.workModePreference || 'Not specified'}</Badge>
+                <span className="text-sm font-medium text-muted-foreground">Work Mode</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Total Experience</span>
                 <div className="text-base">
                   {candidate.totalExperience ? 
                     `${candidate.totalExperience.years}+ years` : 
                     'Experience not specified'
                   }
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Total Experience</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Skill Level</span>
                 <Badge variant="secondary">{candidate.skillProficiencyLevel || 'Not specified'}</Badge>
+                <span className="text-sm font-medium text-muted-foreground">Skill Level</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Priority</span>
                 <Badge variant={candidate.priority === 'high' ? 'destructive' : candidate.priority === 'medium' ? 'default' : 'secondary'}>
                   {candidate.priority}
                 </Badge>
+                <span className="text-sm font-medium text-muted-foreground">Priority</span>
               </div>
             </div>
           </CardContent>
@@ -170,7 +170,6 @@ export function CandidateProfile({
           <CardContent className="pt-0">
             <div className="grid grid-cols-4 gap-6">
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Primary Skills</span>
                 <div className="flex flex-wrap gap-2">
                   {candidate.primarySkills && candidate.primarySkills.length > 0 ? (
                     candidate.primarySkills.map((skill, index) => (
@@ -180,9 +179,9 @@ export function CandidateProfile({
                     <span className="text-sm text-muted-foreground">No skills specified</span>
                   )}
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Primary Skills</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Secondary Skills</span>
                 <div className="flex flex-wrap gap-2">
                   {candidate.secondarySkills && candidate.secondarySkills.length > 0 ? (
                     candidate.secondarySkills.map((skill, index) => (
@@ -192,48 +191,49 @@ export function CandidateProfile({
                     <span className="text-sm text-muted-foreground">No secondary skills</span>
                   )}
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Secondary Skills</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Education</span>
                 <div className="space-y-2">
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Qualification</span>
                     <div className="text-base">{candidate.highestQualification || 'Not specified'}</div>
+                    <span className="text-sm font-medium text-muted-foreground">Qualification</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">University</span>
                     <div className="text-base">{candidate.university || 'Not specified'}</div>
+                    <span className="text-sm font-medium text-muted-foreground">University</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Year of Passing</span>
                     <div className="text-base">{candidate.yearOfPassing || 'Not specified'}</div>
+                    <span className="text-sm font-medium text-muted-foreground">Year of Passing</span>
                   </div>
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Education</span>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-muted-foreground">Additional Info</span>
                 <div className="space-y-2">
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Specialization</span>
                     <div className="text-base">{candidate.specialization || 'Not specified'}</div>
+                    <span className="text-sm font-medium text-muted-foreground">Specialization</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Certifications</span>
                     <div className="text-base">
                       {candidate.certifications && candidate.certifications.length > 0 ? 
                         `${candidate.certifications.length} cert(s)` : 'None'
                       }
                     </div>
+                    <span className="text-sm font-medium text-muted-foreground">Certifications</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Languages</span>
                     <div className="text-base">
                       {candidate.languages && candidate.languages.length > 0 ? 
                         `${candidate.languages.length} lang(s)` : 'None'
                       }
                     </div>
+                    <span className="text-sm font-medium text-muted-foreground">Languages</span>
                   </div>
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Additional Info</span>
               </div>
             </div>
           </CardContent>

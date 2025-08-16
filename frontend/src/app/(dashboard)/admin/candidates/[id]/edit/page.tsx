@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/lib/constants';
 import { EditCandidateForm } from '@/components/candidates/edit-candidate-form';
@@ -9,6 +9,11 @@ import { EditCandidateForm } from '@/components/candidates/edit-candidate-form';
 export default function EditCandidatePage() {
   const { user } = useAuth();
   const router = useRouter();
+  const params = useParams();
+  const candidateId = params.id as string;
+
+  console.log('EditCandidatePage: candidateId:', candidateId);
+  console.log('EditCandidatePage: params:', params);
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
