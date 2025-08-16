@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -58,101 +57,285 @@ export function CandidateProfile({
       </div>
 
       {/* Basic Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            {candidate.title}
+      <div className="grid grid-cols-4 gap-6">
+        <div className="col-span-4">
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-2xl font-bold">{candidate.fullName}</h2>
             <Badge variant={candidate.status === 'approved' ? 'default' : candidate.status === 'rejected' ? 'destructive' : 'secondary'}>
               {candidate.status}
             </Badge>
             <Badge variant={candidate.priority === 'high' ? 'destructive' : candidate.priority === 'medium' ? 'default' : 'secondary'}>
               {candidate.priority} Priority
             </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground text-lg">{candidate.description}</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>john.smith@email.com</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>San Francisco, CA</span>
-              </div>
+          </div>
+          {candidate.profileTitle && (
+            <p className="text-muted-foreground text-lg mb-4">{candidate.profileTitle}</p>
+          )}
+        </div>
+
+        {/* Contact Information */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Contact Info</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span>{candidate.email}</span>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Applied: {new Date(candidate.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <span>5+ years experience</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                <span>Bachelor's in Computer Science</span>
-              </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Phone className="h-4 w-4 text-muted-foreground" />
+              <span>{candidate.phoneNumber}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span>{candidate.city}, {candidate.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span>Applied: {new Date(candidate.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Experience & Skills */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Work Experience</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-medium">Senior Frontend Developer</h4>
-              <p className="text-sm text-muted-foreground">TechCorp Inc. • 2021 - Present</p>
-              <p className="text-sm mt-2">Led frontend development for multiple products, mentored junior developers, and implemented best practices.</p>
+        {/* Application Details */}
+        <div className="col-span-4 space-y-3">  
+          <h3 className="font-semibold text-lg">Application</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <span>
+                {candidate.totalExperience ? 
+                  `${candidate.totalExperience.years}+ years` : 
+                  'Experience not specified'
+                }
+              </span>
             </div>
-            <Separator />
-            <div>
-              <h4 className="font-medium">Frontend Developer</h4>
-              <p className="text-sm text-muted-foreground">StartupXYZ • 2019 - 2021</p>
-              <p className="text-sm mt-2">Built responsive web applications using React and modern JavaScript frameworks.</p>
+            <div className="flex items-center gap-2 text-sm">
+              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <span>{candidate.highestQualification || 'Education not specified'}</span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Skill Level: </span>
+              <Badge variant="secondary">{candidate.skillProficiencyLevel || 'Not specified'}</Badge>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Notice Period: </span>
+              <span>{candidate.noticePeriod || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Skills & Technologies</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">React</Badge>
-              <Badge variant="secondary">TypeScript</Badge>
-              <Badge variant="secondary">Next.js</Badge>
-              <Badge variant="secondary">Tailwind CSS</Badge>
-              <Badge variant="secondary">Node.js</Badge>
-              <Badge variant="secondary">GraphQL</Badge>
-              <Badge variant="secondary">Jest</Badge>
-              <Badge variant="secondary">Git</Badge>
+        {/* Current Status */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Current Status</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-sm">
+              <span className="font-medium">Job Status: </span>
+              <Badge variant="secondary">{candidate.currentJobStatus || 'Not specified'}</Badge>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="text-sm">
+              <span className="font-medium">Employer: </span>
+              <span>{candidate.currentEmployer || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Job Title: </span>
+              <span>{candidate.currentJobTitle || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Work Mode: </span>
+              <Badge variant="secondary">{candidate.workModePreference || 'Not specified'}</Badge>
+            </div>
+          </div>
+        </div>
 
-      {/* Documents */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Documents & Portfolio</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+        {/* Skills */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Skills</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Primary Skills</h4>
+              <div className="flex flex-wrap gap-2">
+                {candidate.primarySkills && candidate.primarySkills.length > 0 ? (
+                  candidate.primarySkills.map((skill, index) => (
+                    <Badge key={index} variant="secondary">{skill}</Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">No skills specified</span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Secondary Skills</h4>
+              <div className="flex flex-wrap gap-2">
+                {candidate.secondarySkills && candidate.secondarySkills.length > 0 ? (
+                  candidate.secondarySkills.map((skill, index) => (
+                    <Badge key={index} variant="outline">{skill}</Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">No secondary skills</span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Skill Level</h4>
+              <Badge variant="secondary">{candidate.skillProficiencyLevel || 'Not specified'}</Badge>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Total Experience</h4>
+              <span className="text-sm">
+                {candidate.totalExperience ? 
+                  `${candidate.totalExperience.years} years, ${candidate.totalExperience.months} months` : 
+                  'Not specified'
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* Education */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Education</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-sm">
+              <span className="font-medium">Qualification: </span>
+              <span>{candidate.highestQualification || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Specialization: </span>
+              <span>{candidate.specialization || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">University: </span>
+              <span>{candidate.university || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Year: </span>
+              <span>{candidate.yearOfPassing || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Preferences */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Job Preferences</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-sm">
+              <span className="font-medium">Job Type: </span>
+              <Badge variant="secondary">{candidate.preferredJobType || 'Not specified'}</Badge>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Work Mode: </span>
+              <Badge variant="secondary">{candidate.workModePreference || 'Not specified'}</Badge>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Industry: </span>
+              <span>{candidate.preferredIndustry || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Expected Salary: </span>
+              <span>{candidate.expectedSalary || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Certifications */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Certifications</h3>
+          <div className="grid grid-cols-4 gap-4">
+            {candidate.certifications && candidate.certifications.length > 0 ? (
+              candidate.certifications.map((cert, index) => (
+                <div key={index} className="text-sm">
+                  <span>• {cert}</span>
+                </div>
+              ))
+            ) : (
+              <span className="text-sm text-muted-foreground col-span-4">No certifications</span>
+            )}
+          </div>
+        </div>
+
+        {/* Languages */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Languages</h3>
+          <div className="grid grid-cols-4 gap-4">
+            {candidate.languages && candidate.languages.length > 0 ? (
+              candidate.languages.map((lang, index) => (
+                <div key={index} className="text-sm">
+                  <span className="font-medium">{lang.language}: </span>
+                  <Badge variant="outline">{lang.proficiency}</Badge>
+                </div>
+              ))
+            ) : (
+              <span className="text-sm text-muted-foreground col-span-4">No languages specified</span>
+            )}
+          </div>
+        </div>
+
+        {/* Work Authorization */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Work Authorization</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-sm">
+              <span className="font-medium">Status: </span>
+              <span>{candidate.workAuthorization || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Notice Period: </span>
+              <span>{candidate.noticePeriod || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Job Status: </span>
+              <Badge variant="secondary">{candidate.currentJobStatus || 'Not specified'}</Badge>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Priority: </span>
+              <Badge variant={candidate.priority === 'high' ? 'destructive' : candidate.priority === 'medium' ? 'default' : 'secondary'}>
+                {candidate.priority}
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Links */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Professional Links</h3>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-sm">
+              <span className="font-medium">LinkedIn: </span>
+              {candidate.linkedinUrl ? (
+                <a href={candidate.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  View Profile
+                </a>
+              ) : (
+                <span className="text-muted-foreground">Not provided</span>
+              )}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Portfolio: </span>
+              {candidate.portfolioUrl ? (
+                <a href={candidate.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  View Portfolio
+                </a>
+              ) : (
+                <span className="text-muted-foreground">Not provided</span>
+              )}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Gender: </span>
+              <span>{candidate.gender || 'Not specified'}</span>
+            </div>
+            <div className="text-sm">
+              <span className="font-medium">Date of Birth: </span>
+              <span>{candidate.dateOfBirth || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Documents */}
+        <div className="col-span-4 space-y-3">
+          <h3 className="font-semibold text-lg">Documents & Portfolio</h3>
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-muted-foreground" />
@@ -193,8 +376,8 @@ export function CandidateProfile({
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
