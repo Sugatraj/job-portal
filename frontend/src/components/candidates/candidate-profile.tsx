@@ -13,27 +13,21 @@ import {
   FileText,
   Download,
   Eye,
-  MessageSquare,
-  CheckCircle,
-  XCircle,
-  Edit
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { Candidate } from './candidates-columns';
 
 interface CandidateProfileProps {
   candidate: Candidate;
   onBack: () => void;
-  onScheduleInterview: () => void;
-  onApprove: () => void;
-  onReject: () => void;
+  onDelete: () => void;
 }
 
 export function CandidateProfile({ 
   candidate, 
-  onBack, 
-  onScheduleInterview, 
-  onApprove, 
-  onReject 
+  onBack,
+  onDelete
 }: CandidateProfileProps) {
   return (
     <div className="space-y-6">
@@ -49,22 +43,10 @@ export function CandidateProfile({
             icon: <Edit className="h-4 w-4" />
           },
           {
-            label: 'Schedule Interview',
-            onClick: onScheduleInterview,
-            variant: 'outline',
-            icon: <MessageSquare className="h-4 w-4" />
-          },
-          {
-            label: 'Approve',
-            onClick: onApprove,
-            variant: 'default',
-            icon: <CheckCircle className="h-4 w-4" />
-          },
-          {
-            label: 'Reject',
-            onClick: onReject,
+            label: 'Delete',
+            onClick: onDelete,
             variant: 'destructive',
-            icon: <XCircle className="h-4 w-4" />
+            icon: <Trash2 className="h-4 w-4" />
           }
         ]}
       />
