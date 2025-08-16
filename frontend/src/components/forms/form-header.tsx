@@ -19,31 +19,32 @@ export function FormHeader({
   isSubmitting,
   isFormValid,
   submitButtonText,
-  submitButtonIcon = <Save className="mr-2 h-4 w-4" />,
+  submitButtonIcon = <Save className="h-4 w-4" />,
   loadingText = "Processing...",
 }: FormHeaderProps) {
   return (
     <div className="flex items-center justify-between">
-      <Button variant="outline" onClick={onCancel}>
+      <Button variant="outline" onClick={onCancel} className="px-2 sm:px-4">
         <ArrowLeft className="h-4 w-4" />
-        Back
+        <span className="hidden sm:inline ml-2">Back</span>
       </Button>
       
-      <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{title}</h1>
       
       <Button 
         onClick={() => onSubmit()}
         disabled={!isFormValid || isSubmitting}
+        className="px-2 sm:px-4"
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {loadingText}
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="hidden sm:inline ml-2">{loadingText}</span>
           </>
         ) : (
           <>
             {submitButtonIcon}
-            {submitButtonText}
+            <span className="hidden sm:inline ml-2">{submitButtonText}</span>
           </>
         )}
       </Button>

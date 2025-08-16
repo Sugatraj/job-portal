@@ -44,7 +44,7 @@ export default function AdminJobsPage() {
       jobsService.initializeWithSampleData();
       
       // Check if we need to load sample data
-      const storedJobs = jobsService.getAllJobs();
+    const storedJobs = jobsService.getAllJobs();
       if (storedJobs.length === 0) {
         console.log('AdminJobsPage: No jobs found, loading sample data');
         jobsService.setSampleData(mockJobs);
@@ -225,7 +225,7 @@ export default function AdminJobsPage() {
             }}
           />
         </CardHeader>
-      
+        
         <CardContent className="space-y-6">
 
           {/* Table: Clean data display */}
