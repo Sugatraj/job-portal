@@ -11,6 +11,7 @@ import {
   Home,
   Building2,
   FileText,
+  BookOpen,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -49,6 +50,11 @@ export function AppSidebar() {
       url: ROUTES.admin.jobs,
       icon: Briefcase,
     },
+    {
+      title: 'Courses',
+      url: ROUTES.admin.courses,
+      icon: BookOpen,
+    },
   ];
 
   const userMenuItems = [
@@ -56,6 +62,11 @@ export function AppSidebar() {
       title: 'Dashboard',
       url: ROUTES.user.dashboard,
       icon: Home,
+    },
+    {
+      title: 'Courses',
+      url: ROUTES.user.courses,
+      icon: BookOpen,
     },
     {
       title: 'Applied Jobs',

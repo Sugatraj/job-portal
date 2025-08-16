@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
-import { Users, Briefcase, Building2, TrendingUp, FileText } from 'lucide-react';
+import { Users, Briefcase, Building2, TrendingUp, FileText, BookOpen } from 'lucide-react';
 import { Loading, LoadingGrid, LoadingCard } from '@/components/ui/loading';
 import { candidatesService } from '@/lib/services/candidatesService';
 import { jobsService } from '@/lib/services/jobsService';
+import { courseService } from '@/lib/services/coursesService';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     totalCandidates: 0,
     activeJobs: 0,
-    totalApplications: 0,
+    totalCourses: 0,
     growth: 0
   });
 
@@ -29,14 +30,15 @@ export default function AdminDashboard() {
     }
     
     // Get real-time stats
-    const loadStats = () => {
+    const loadStats = async () => {
       const candidatesStats = candidatesService.getCandidatesStats();
       const jobsStats = jobsService.getJobsStats();
+      const courses = await courseService.getAll();
       
       setStats({
         totalCandidates: candidatesStats.total,
         activeJobs: jobsStats.byStatus.active,
-        totalApplications: jobsStats.totalApplications,
+        totalCourses: courses.length,
         growth: Math.round((candidatesStats.byStatus.approved / Math.max(candidatesStats.total, 1)) * 100)
       });
     };
@@ -113,15 +115,17 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
+
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalApplications}</div>
+            <div className="text-2xl font-bold">{stats.totalCourses}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.totalApplications > 0 ? '+12 from yesterday' : 'No applications yet'}
+              {stats.totalCourses > 0 ? 'Available courses' : 'No courses yet'}
             </p>
           </CardContent>
         </Card>
@@ -141,7 +145,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -187,6 +191,31 @@ export default function AdminDashboard() {
               </Button>
               <p className="text-xs text-muted-foreground text-center">
                 Route: {ROUTES.admin.jobs}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              <span>Manage Courses</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Create, read, update, and delete course content.
+            </p>
+            <div className="space-y-2">
+              <Button 
+                className="w-full"
+                onClick={() => router.push(ROUTES.admin.courses)}
+              >
+                Go to Courses
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Route: {ROUTES.admin.courses}
               </p>
             </div>
           </CardContent>

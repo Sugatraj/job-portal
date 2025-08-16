@@ -9,12 +9,14 @@ export const APP_CONFIG = {
       dashboard: '/admin',
       candidates: '/admin/candidates',
       jobs: '/admin/jobs',
+      courses: '/admin/courses',
     },
     user: {
       dashboard: '/user',
       profile: '/user/profile',
       jobs: '/user/jobs',
       appliedJobs: '/user/applied-jobs',
+      courses: '/user/courses',
     },
   } as const;
 
@@ -27,6 +29,11 @@ export const APP_CONFIG = {
   export const getJobRoute = (id: string) => `/admin/jobs/${id}`;
   export const getJobEditRoute = (id: string) => `/admin/jobs/${id}/edit`;
   export const getJobViewRoute = (id: string) => `/admin/jobs?id=${id}`;
+
+  // Course route helper functions
+  export const getCourseRoute = (id: string) => `/admin/courses/${id}`;
+  export const getCourseEditRoute = (id: string) => `/admin/courses/${id}/edit`;
+  export const getCourseViewRoute = (id: string) => `/admin/courses?id=${id}`;
 
   export const USER_ROLES = {
     ADMIN: 'admin',
