@@ -23,6 +23,11 @@ export const APP_CONFIG = {
   export const getCandidateEditRoute = (id: string) => `/admin/candidates/${id}/edit`;
   export const getCandidateViewRoute = (id: string) => `/admin/candidates?id=${id}`;
 
+  // Job route helper functions
+  export const getJobRoute = (id: string) => `/admin/jobs/${id}`;
+  export const getJobEditRoute = (id: string) => `/admin/jobs/${id}/edit`;
+  export const getJobViewRoute = (id: string) => `/admin/jobs?id=${id}`;
+
   export const USER_ROLES = {
     ADMIN: 'admin',
     USER: 'user',

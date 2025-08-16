@@ -3,17 +3,48 @@ import { Job } from '@/components/jobs/jobs-columns';
 const JOBS_STORAGE_KEY = 'job-portal-jobs';
 
 export interface CreateJobData {
-  title: string;
-  company: string;
+  jobTitle: string;
+  jobDescription: string;
+  jobType: 'full-time' | 'part-time' | 'contract' | 'internship' | 'freelance';
+  workMode: 'on-site' | 'hybrid' | 'remote';
+  industry: string;
+  department: string;
+  role: string;
+  companyId: string;
+  companyName: string;
+  companyLocation: string;
   location: string;
-  type: 'full-time' | 'part-time' | 'internship' | 'remote';
-  category: string;
-  salary: string;
-  status?: 'active' | 'paused' | 'closed' | 'draft';
-  description: string;
-  requirements: string[];
-  benefits: string[];
-  deadline: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  requiredSkills: string[];
+  preferredSkills?: string[];
+  experienceRequired: {
+    minYears: number;
+    maxYears?: number;
+  };
+  educationRequired: string;
+  certifications?: string[];
+  languages?: Array<{
+    language: string;
+    proficiency: 'basic' | 'conversational' | 'fluent' | 'native';
+  }>;
+  salaryRange: {
+    min: number;
+    max: number;
+  };
+  currency: string;
+  additionalBenefits?: string[];
+  numberOfOpenings: number;
+  employmentStartDate?: string;
+  applicationDeadline?: string;
+  shiftTiming: 'day' | 'night' | 'rotational';
+  noticePeriodPreference?: string;
+  workAuthorizationRequirements?: string[];
+  status: 'active' | 'closed' | 'draft';
+  priority: 'low' | 'medium' | 'high';
+  postedBy: string;
 }
 
 export interface UpdateJobData extends Partial<CreateJobData> {
@@ -68,8 +99,10 @@ class JobsService {
       id: Date.now().toString(), // Simple ID generation
       ...data,
       status: data.status || 'draft',
-      applications: 0,
+      datePosted: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     jobs.push(newJob);
@@ -88,6 +121,8 @@ class JobsService {
     jobs[index] = {
       ...jobs[index],
       ...data,
+      lastUpdated: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     this.saveJobsToStorage(jobs);
@@ -119,15 +154,12 @@ class JobsService {
 
     switch (currentStatus) {
       case 'active':
-        newStatus = 'paused';
+        newStatus = 'closed';
         break;
-      case 'paused':
+      case 'closed':
         newStatus = 'active';
         break;
       case 'draft':
-        newStatus = 'active';
-        break;
-      case 'closed':
         newStatus = 'active';
         break;
       default:
@@ -135,6 +167,8 @@ class JobsService {
     }
 
     jobs[index].status = newStatus;
+    jobs[index].lastUpdated = new Date().toISOString();
+    jobs[index].updatedAt = new Date().toISOString();
     this.saveJobsToStorage(jobs);
     return jobs[index];
   }
@@ -147,29 +181,26 @@ class JobsService {
     if (index === -1) return null;
 
     jobs[index].status = status;
+    jobs[index].lastUpdated = new Date().toISOString();
+    jobs[index].updatedAt = new Date().toISOString();
     this.saveJobsToStorage(jobs);
     return jobs[index];
   }
 
-  // Increment application count
-  incrementApplications(id: string): boolean {
-    const jobs = this.getJobsFromStorage();
-    const index = jobs.findIndex(job => job.id === id);
-    
-    if (index === -1) return false;
-
-    jobs[index].applications += 1;
-    this.saveJobsToStorage(jobs);
-    return true;
-  }
-
-  // Initialize with mock data if storage is empty
-  initializeWithMockData(mockJobs: Job[]): void {
+  // Initialize with sample data if storage is empty
+  initializeWithSampleData(): void {
     const existingJobs = this.getJobsFromStorage();
     
     if (existingJobs.length === 0) {
-      this.saveJobsToStorage(mockJobs);
+      // Use a simple approach - the mock data will be imported by the page component
+      console.log('JobsService: Storage is empty, ready to initialize with sample data');
     }
+  }
+
+  // Set sample data manually (called from page component)
+  setSampleData(sampleJobs: Job[]): void {
+    this.saveJobsToStorage(sampleJobs);
+    console.log('JobsService: Sample data set successfully:', sampleJobs.length, 'jobs');
   }
 
   // Search jobs
@@ -178,10 +209,10 @@ class JobsService {
     const lowercaseQuery = query.toLowerCase();
     
     return jobs.filter(job => 
-      job.title.toLowerCase().includes(lowercaseQuery) ||
-      job.company.toLowerCase().includes(lowercaseQuery) ||
-      job.description.toLowerCase().includes(lowercaseQuery) ||
-      job.category.toLowerCase().includes(lowercaseQuery) ||
+      job.jobTitle.toLowerCase().includes(lowercaseQuery) ||
+      job.companyName.toLowerCase().includes(lowercaseQuery) ||
+      job.jobDescription.toLowerCase().includes(lowercaseQuery) ||
+      job.industry.toLowerCase().includes(lowercaseQuery) ||
       job.location.toLowerCase().includes(lowercaseQuery)
     );
   }
@@ -193,18 +224,18 @@ class JobsService {
   }
 
   // Filter jobs by type
-  filterByType(type: Job['type']): Job[] {
+  filterByType(type: Job['jobType']): Job[] {
     const jobs = this.getJobsFromStorage();
-    return jobs.filter(job => job.type === type);
+    return jobs.filter(job => job.jobType === type);
   }
 
-  // Filter jobs by category
-  filterByCategory(category: string): Job[] {
+  // Filter jobs by industry
+  filterByIndustry(industry: string): Job[] {
     const jobs = this.getJobsFromStorage();
-    const lowercaseCategory = category.toLowerCase();
+    const lowercaseIndustry = industry.toLowerCase();
     
     return jobs.filter(job => 
-      job.category.toLowerCase().includes(lowercaseCategory)
+      job.industry.toLowerCase().includes(lowercaseIndustry)
     );
   }
 
@@ -214,7 +245,8 @@ class JobsService {
     const lowercaseLocation = location.toLowerCase();
     
     return jobs.filter(job => 
-      job.location.toLowerCase().includes(lowercaseLocation)
+      job.location.toLowerCase().includes(lowercaseLocation) ||
+      job.city.toLowerCase().includes(lowercaseLocation)
     );
   }
 
@@ -223,12 +255,7 @@ class JobsService {
     const jobs = this.getJobsFromStorage();
     
     return jobs.filter(job => {
-      // Extract numeric value from salary string (e.g., "$120,000 - $150,000" -> 120000)
-      const salaryMatch = job.salary.match(/\$?([\d,]+)/);
-      if (!salaryMatch) return false;
-      
-      const salary = parseInt(salaryMatch[1].replace(/,/g, ''));
-      return salary >= minSalary && salary <= maxSalary;
+      return job.salaryRange.min >= minSalary && job.salaryRange.max <= maxSalary;
     });
   }
 
@@ -240,23 +267,25 @@ class JobsService {
       total: jobs.length,
       byStatus: {
         active: jobs.filter(j => j.status === 'active').length,
-        paused: jobs.filter(j => j.status === 'paused').length,
         closed: jobs.filter(j => j.status === 'closed').length,
         draft: jobs.filter(j => j.status === 'draft').length,
       },
       byType: {
-        'full-time': jobs.filter(j => j.type === 'full-time').length,
-        'part-time': jobs.filter(j => j.type === 'part-time').length,
-        'internship': jobs.filter(j => j.type === 'internship').length,
-        'remote': jobs.filter(j => j.type === 'remote').length,
+        'full-time': jobs.filter(j => j.jobType === 'full-time').length,
+        'part-time': jobs.filter(j => j.jobType === 'part-time').length,
+        'contract': jobs.filter(j => j.jobType === 'contract').length,
+        'internship': jobs.filter(j => j.jobType === 'internship').length,
+        'freelance': jobs.filter(j => j.jobType === 'freelance').length,
       },
-      byCategory: jobs.reduce((acc, job) => {
-        acc[job.category] = (acc[job.category] || 0) + 1;
+      byIndustry: jobs.reduce((acc, job) => {
+        acc[job.industry] = (acc[job.industry] || 0) + 1;
         return acc;
       }, {} as Record<string, number>),
-      totalApplications: jobs.reduce((sum, job) => sum + job.applications, 0),
-      averageApplications: jobs.length > 0 ? 
-        Math.round(jobs.reduce((sum, job) => sum + job.applications, 0) / jobs.length) : 0,
+      byPriority: {
+        low: jobs.filter(j => j.priority === 'low').length,
+        medium: jobs.filter(j => j.priority === 'medium').length,
+        high: jobs.filter(j => j.priority === 'high').length,
+      },
     };
   }
 
@@ -267,17 +296,24 @@ class JobsService {
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     
     return jobs.filter(job => {
-      const deadline = new Date(job.deadline);
+      if (!job.applicationDeadline) return false;
+      const deadline = new Date(job.applicationDeadline);
       return deadline <= sevenDaysFromNow && job.status === 'active';
     });
   }
 
-  // Get popular jobs (most applications)
-  getPopularJobs(limit: number = 5): Job[] {
+  // Get recent jobs (posted within last 30 days)
+  getRecentJobs(limit: number = 5): Job[] {
     const jobs = this.getJobsFromStorage();
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
     return jobs
-      .filter(job => job.status === 'active')
-      .sort((a, b) => b.applications - a.applications)
+      .filter(job => {
+        const postedDate = new Date(job.datePosted);
+        return postedDate >= thirtyDaysAgo;
+      })
+      .sort((a, b) => new Date(b.datePosted).getTime() - new Date(a.datePosted).getTime())
       .slice(0, limit);
   }
 }

@@ -2,218 +2,394 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { PageHeader } from '@/components/layout/page-header';
 import { 
-  Building2, 
+  Briefcase, 
+  Building, 
   MapPin, 
   Calendar, 
   DollarSign, 
-  Users, 
-  Clock,
+  Users,
   FileText,
-  CheckCircle,
-  Star,
+  Download,
+  Eye,
   Edit,
-  Pause,
-  Play,
-  Eye
+  Trash2,
+  Clock,
+  GraduationCap,
+  Star
 } from 'lucide-react';
 import { Job } from './jobs-columns';
 
 interface JobProfileProps {
   job: Job;
   onBack: () => void;
+  onDelete: () => void;
   onEdit: () => void;
-  onToggleStatus: () => void;
-  onViewApplications: () => void;
 }
 
 export function JobProfile({ 
   job, 
-  onBack, 
-  onEdit, 
-  onToggleStatus, 
-  onViewApplications 
+  onBack,
+  onDelete,
+  onEdit
 }: JobProfileProps) {
-  const isActive = job.status === 'active';
-  const isExpired = new Date(job.deadline) < new Date();
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={onBack}>
-          ← Back to Jobs
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onViewApplications}>
-            <Eye className="mr-2 h-4 w-4" />
-            View Applications ({job.applications})
-          </Button>
-          <Button variant="outline" onClick={onToggleStatus}>
-            {isActive ? (
-              <>
-                <Pause className="mr-2 h-4 w-4" />
-                Pause
-              </>
-            ) : (
-              <>
-                <Play className="mr-2 h-4 w-4" />
-                Activate
-              </>
-            )}
-          </Button>
-          <Button onClick={onEdit}>
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Job
-          </Button>
+    <Card className="p-6">
+      <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title={`Job Details`}
+          onBack={onBack}
+          actions={[
+            {
+              label: 'Edit',
+              onClick: onEdit,
+              variant: 'outline',
+              icon: <Edit className="h-4 w-4" />
+            },
+            {
+              label: 'Delete',
+              onClick: onDelete,
+              variant: 'destructive',
+              icon: <Trash2 className="h-4 w-4" />
+            }
+          ]}
+        />
+
+        {/* Main Grid Container */}
+        <div className="space-y-6">
+          {/* Basic Job Information */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Briefcase className="h-5 w-5" />
+                Basic Job Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="text-xl font-semibold">{job.jobTitle}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Job Title</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.role}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Role / Designation</span>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant="secondary">{job.jobType}</Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Job Type</span>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant={job.status === 'active' ? 'default' : job.status === 'closed' ? 'destructive' : 'secondary'}>
+                    {job.status}
+                  </Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Status</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.industry}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Industry</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.department}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Department</span>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant="secondary">{job.workMode}</Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Work Mode</span>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant={job.priority === 'high' ? 'destructive' : job.priority === 'medium' ? 'default' : 'secondary'}>
+                    {job.priority}
+                  </Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Priority</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Company Details */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Building className="h-5 w-5" />
+                Company Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="text-xl font-semibold">{job.companyName}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Company Name</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.companyId}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Company ID</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.companyLocation}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Company Location</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{new Date(job.datePosted).toLocaleDateString()}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Date Posted</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Location Details */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Location Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="text-base">{job.location}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Location</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.city}</div>
+                  <span className="text-sm font-medium text-muted-foreground">City</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.state}</div>
+                  <span className="text-sm font-medium text-muted-foreground">State</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.country}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Country</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.pincode}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Pincode / Zip Code</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Skills & Requirements */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Star className="h-5 w-5" />
+                Skills & Requirements
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {job.requiredSkills && job.requiredSkills.length > 0 ? (
+                      job.requiredSkills.map((skill, index) => (
+                        <Badge key={index} variant="secondary">{skill}</Badge>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">No skills specified</span>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Required Skills</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {job.preferredSkills && job.preferredSkills.length > 0 ? (
+                      job.preferredSkills.map((skill, index) => (
+                        <Badge key={index} variant="outline">{skill}</Badge>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">No preferred skills</span>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Preferred Skills</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.experienceRequired ? 
+                      `${job.experienceRequired.minYears}${job.experienceRequired.maxYears ? `-${job.experienceRequired.maxYears}` : '+'} years` : 
+                      'Experience not specified'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Experience Required</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.educationRequired || 'Not specified'}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Education Required</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.certifications && job.certifications.length > 0 ? 
+                      `${job.certifications.length} cert(s)` : 'None'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Certifications</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.languages && job.languages.length > 0 ? 
+                      `${job.languages.length} lang(s)` : 'None'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Languages</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Compensation & Benefits */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                Compensation & Benefits
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.salaryRange ? 
+                      `${job.currency} ${job.salaryRange.min.toLocaleString()} - ${job.salaryRange.max.toLocaleString()}` : 
+                      'Salary not specified'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Salary Range</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.currency}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Currency</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.additionalBenefits && job.additionalBenefits.length > 0 ? 
+                      job.additionalBenefits.slice(0, 2).join(', ') : 'None'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Additional Benefits</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Job Details & Timeline */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Job Details & Timeline
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="text-base">{job.numberOfOpenings}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Number of Openings</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.employmentStartDate || 'Not specified'}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Employment Start Date</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.applicationDeadline || 'Not specified'}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Application Deadline</span>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant="secondary">{job.shiftTiming}</Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Shift Timing</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.noticePeriodPreference || 'Not specified'}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Notice Period Preference</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">
+                    {job.workAuthorizationRequirements && job.workAuthorizationRequirements.length > 0 ? 
+                      job.workAuthorizationRequirements.join(', ') : 'Not specified'
+                    }
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Work Authorization</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{new Date(job.lastUpdated).toLocaleDateString()}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Last Updated</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-base">{job.postedBy}</div>
+                  <span className="text-sm font-medium text-muted-foreground">Posted By</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Job Description */}
+          <Card className="col-span-4">
+            <CardHeader className="pb-3">
+              <CardTitle>Job Description</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="prose max-w-none">
+                <p className="text-base leading-relaxed whitespace-pre-wrap">
+                  {job.jobDescription}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Documents & Attachments */}
+          <Card className="col-span-4">
+            <CardHeader className="pb-3">
+              <CardTitle>Documents & Attachments</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">Job Description.pdf</p>
+                      <p className="text-sm text-muted-foreground">Updated {new Date(job.datePosted).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">Company Profile.pdf</p>
+                      <p className="text-sm text-muted-foreground">Company information</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      {/* Job Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold">{job.title}</h1>
-                <Badge variant={isActive ? 'default' : 'secondary'}>
-                  {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                </Badge>
-                {isExpired && (
-                  <Badge variant="destructive">Expired</Badge>
-                )}
-              </div>
-              <div className="flex items-center gap-4 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  <span>{job.company}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{job.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span className="capitalize">{job.type.replace('-', ' ')}</span>
-                </div>
-              </div>
-            </div>
-            <div className="text-right space-y-2">
-              <div className="text-2xl font-bold text-green-600">{job.salary}</div>
-              <div className="text-sm text-muted-foreground">
-                <Users className="inline h-4 w-4 mr-1" />
-                {job.applications} applications
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Posted: {new Date(job.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <span>Category: {job.category}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Star className="h-4 w-4 text-muted-foreground" />
-                <span>Type: {job.type.charAt(0).toUpperCase() + job.type.slice(1)}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span>Salary: {job.salary}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                <span>Status: {job.status.charAt(0).toUpperCase() + job.status.slice(1)}</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Job Description */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Job Description</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground leading-relaxed">{job.description}</p>
-        </CardContent>
-      </Card>
-
-      {/* Requirements */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Requirements</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {job.requirements.map((requirement, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                <span>{requirement}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Benefits */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Benefits</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {job.benefits.map((benefit, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <Star className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                <span>{benefit}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Application Statistics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Statistics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{job.applications}</div>
-              <div className="text-sm text-muted-foreground">Total Applications</div>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
-                {new Date(job.deadline) > new Date() ? 'Active' : 'Expired'}
-              </div>
-              <div className="text-sm text-muted-foreground">Status</div>
-            </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
-                {Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
-              </div>
-              <div className="text-sm text-muted-foreground">Days Remaining</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </Card>
   );
 }
