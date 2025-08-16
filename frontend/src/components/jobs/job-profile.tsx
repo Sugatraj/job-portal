@@ -68,7 +68,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="text-xl font-semibold">{job.jobTitle}</div>
                   <span className="text-sm font-medium text-muted-foreground">Job Title</span>
@@ -118,7 +118,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="text-xl font-semibold">{job.companyName}</div>
                   <span className="text-sm font-medium text-muted-foreground">Company Name</span>
@@ -148,7 +148,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="text-base">{job.location}</div>
                   <span className="text-sm font-medium text-muted-foreground">Location</span>
@@ -182,7 +182,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="flex flex-wrap gap-2">
                     {job.requiredSkills && job.requiredSkills.length > 0 ? (
@@ -249,7 +249,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="text-base">
                     {job.salaryRange ? 
@@ -284,7 +284,7 @@ export function JobProfile({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="text-base">{job.numberOfOpenings}</div>
                   <span className="text-sm font-medium text-muted-foreground">Number of Openings</span>
@@ -345,7 +345,7 @@ export function JobProfile({
               <CardTitle>Documents & Attachments</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-muted-foreground" />

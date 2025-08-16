@@ -62,7 +62,7 @@ export function CandidateProfile({
               <CardTitle className="text-lg">Personal Details</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {candidate.profileTitle && (
                   <>
                     <div className="space-y-2">
@@ -123,7 +123,7 @@ export function CandidateProfile({
               <CardTitle className="text-lg">Professional Status & Experience</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Badge variant="secondary">{candidate.currentJobStatus || 'Not specified'}</Badge>
                   <span className="text-sm font-medium text-muted-foreground">Job Status</span>
@@ -169,7 +169,7 @@ export function CandidateProfile({
               <CardTitle className="text-lg">Skills & Education</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="flex flex-wrap gap-2">
                     {candidate.primarySkills && candidate.primarySkills.length > 0 ? (
@@ -246,7 +246,7 @@ export function CandidateProfile({
               <CardTitle>Job Preferences & Professional Links</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="text-sm">
                   <span className="font-medium">Job Type: </span>
                   <Badge variant="secondary">{candidate.preferredJobType || 'Not specified'}</Badge>
@@ -305,7 +305,7 @@ export function CandidateProfile({
               <CardTitle>Documents & Portfolio</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-muted-foreground" />
