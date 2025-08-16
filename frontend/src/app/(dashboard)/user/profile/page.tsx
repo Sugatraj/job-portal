@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { PageHeader } from '@/components/forms';
 import { 
   ArrowLeft, 
   Save, 
@@ -238,36 +239,19 @@ export default function UserProfilePage() {
       {/* Navigation Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={() => router.push(ROUTES.user.dashboard)}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-              <p className="text-sm text-gray-600">
-                Manage your personal information and professional details
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isEditing ? (
-                <>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSave}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Changes
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={() => setIsEditing(true)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
-              )}
-            </div>
-          </div>
+          <PageHeader
+            title="My Profile"
+            onBack={() => router.push(ROUTES.user.dashboard)}
+            actionButton={isEditing ? {
+              text: "Save Changes",
+              onClick: handleSave,
+              icon: <Save className="mr-2 h-4 w-4" />
+            } : {
+              text: "Edit Profile",
+              onClick: () => setIsEditing(true),
+              icon: <Edit className="mr-2 h-4 w-4" />
+            }}
+          />
         </div>
       </div>
 

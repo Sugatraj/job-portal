@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PageHeader } from '@/components/forms';
 import { 
   ArrowLeft, 
   Search, 
@@ -198,18 +199,14 @@ export default function AppliedJobsPage() {
       {/* Navigation Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={handleBackToDashboard}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">Applied Jobs</h1>
-              <p className="text-sm text-gray-600">
-                Track your job applications and their current status
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            title="Applied Jobs"
+            onBack={handleBackToDashboard}
+            actionButton={{
+              text: "Back to Dashboard",
+              onClick: handleBackToDashboard
+            }}
+          />
         </div>
       </div>
 

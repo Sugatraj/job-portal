@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { PageHeader } from '@/components/forms';
 import { 
   ArrowLeft, 
   Building2, 
@@ -159,18 +160,14 @@ export default function JobDetailPage() {
       {/* Navigation Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={() => router.push(ROUTES.user.jobs)}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Jobs
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">Job Details</h1>
-              <p className="text-sm text-gray-600">
-                View complete information about this opportunity
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            title="Job Details"
+            onBack={() => router.push(ROUTES.user.jobs)}
+            actionButton={{
+              text: "Back to Jobs",
+              onClick: () => router.push(ROUTES.user.jobs)
+            }}
+          />
         </div>
       </div>
 
