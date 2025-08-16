@@ -32,7 +32,12 @@ export default function UserJobsPage() {
     }
     
     // Initialize jobs from local storage
-    jobsService.initializeWithMockData(mockJobs);
+    jobsService.initializeWithSampleData();
+    // Set sample data if storage is empty
+    const existingJobs = jobsService.getAllJobs();
+    if (existingJobs.length === 0) {
+      jobsService.setSampleData(mockJobs);
+    }
     const activeJobs = jobsService.getActiveJobs();
     setJobs(activeJobs);
     setFilteredJobs(activeJobs);
@@ -45,22 +50,22 @@ export default function UserJobsPage() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(job => 
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.location.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply category filter
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(job => job.category === selectedCategory);
+      filtered = filtered.filter(job => job.industry === selectedCategory);
     }
 
     // Apply type filter
     if (selectedType !== 'all') {
-      filtered = filtered.filter(job => job.type === selectedType);
+      filtered = filtered.filter(job => job.jobType === selectedType);
     }
 
     // Apply location filter
@@ -77,19 +82,17 @@ export default function UserJobsPage() {
 
   const handleViewJob = (job: Job) => {
     // TODO: Navigate to job detail page
-    console.log('View job:', job.title);
-    alert(`Viewing job: ${job.title}`);
+    console.log('View job:', job.jobTitle);
+    alert(`Viewing job: ${job.jobTitle}`);
   };
 
   const handleApplyJob = (job: Job) => {
     // TODO: Implement job application
-    console.log('Apply for job:', job.title);
-    alert(`Applied for: ${job.title}`);
+    console.log('Apply for job:', job.jobTitle);
+    alert(`Applied for: ${job.jobTitle}`);
     
-    // Increment application count
-    jobsService.incrementApplications(job.id);
-    
-    // Refresh jobs to show updated count
+    // TODO: Implement application tracking
+    // For now, just refresh the jobs
     const activeJobs = jobsService.getActiveJobs();
     setJobs(activeJobs);
   };
@@ -99,8 +102,8 @@ export default function UserJobsPage() {
   };
 
   // Get unique categories, types, and locations for filters
-  const categories = ['all', ...Array.from(new Set(jobs.map(job => job.category)))];
-  const types = ['all', ...Array.from(new Set(jobs.map(job => job.type)))];
+  const categories = ['all', ...Array.from(new Set(jobs.map(job => job.industry)))];
+  const types = ['all', ...Array.from(new Set(jobs.map(job => job.jobType)))];
   const locations = ['all', ...Array.from(new Set(jobs.map(job => job.location)))];
 
   const clearFilters = () => {
@@ -242,10 +245,10 @@ export default function UserJobsPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <CardTitle className="text-lg">{job.title}</CardTitle>
+                    <CardTitle className="text-lg">{job.jobTitle}</CardTitle>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Building2 className="h-4 w-4" />
-                      <span>{job.company}</span>
+                      <span>{job.companyName}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
@@ -253,32 +256,32 @@ export default function UserJobsPage() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <Badge variant="secondary">{job.category}</Badge>
-                    <Badge variant={job.type === 'remote' ? 'destructive' : 'outline'}>
-                      {job.type.replace('-', ' ')}
+                    <Badge variant="secondary">{job.industry}</Badge>
+                    <Badge variant={job.workMode === 'remote' ? 'destructive' : 'outline'}>
+                      {job.jobType.replace('-', ' ')}
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground line-clamp-3">
-                  {job.description}
+                  {job.jobDescription}
                 </p>
                 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                       <DollarSign className="h-4 w-4 text-green-600" />
-                      <span className="font-medium">{job.salary}</span>
+                      <span className="font-medium">${job.salaryRange.min}K - ${job.salaryRange.max}K</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="h-4 w-4 text-blue-600" />
-                      <span>{job.applications} applications</span>
+                      <span>{job.numberOfOpenings} openings</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+                    <span>Deadline: {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString() : 'No deadline'}</span>
                   </div>
                 </div>
 
