@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle, Clock, Users, Award, Edit, ArrowLeft } from "lucide-react"
+import { CheckCircle, Clock, Users, Award, Edit, Trash2 } from "lucide-react"
 import { courseService } from "@/lib/services/coursesService"
 import { Course } from "@/types/course"
-import { toast } from "sonner"
-import Link from "next/link"
+import { PageHeader } from "@/components/layout/page-header"
 
 interface CourseProfileProps {
   courseId: string
@@ -31,12 +30,11 @@ export function CourseProfile({ courseId }: CourseProfileProps) {
       if (courseData) {
         setCourse(courseData)
       } else {
-        toast.error("Course not found")
         router.push("/admin/courses")
       }
     } catch (error) {
       console.error("Error loading course:", error)
-      toast.error("Failed to load course")
+      router.push("/admin/courses")
     } finally {
       setLoading(false)
     }
@@ -48,13 +46,19 @@ export function CourseProfile({ courseId }: CourseProfileProps) {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
         await courseService.delete(courseId)
-        toast.success("Course deleted successfully!")
         router.push("/admin/courses")
       } catch (error) {
         console.error("Error deleting course:", error)
-        toast.error("Failed to delete course")
       }
     }
+  }
+
+  const onBack = () => {
+    router.push("/admin/courses")
+  }
+
+  const onEdit = () => {
+    router.push(`/admin/courses/${courseId}/edit`)
   }
 
   if (loading) {
@@ -116,33 +120,26 @@ export function CourseProfile({ courseId }: CourseProfileProps) {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push("/admin/courses")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Courses
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">{course.name}</h1>
-          <p className="text-muted-foreground">Course Details</p>
-        </div>
-        <div className="flex gap-2">
-          <Button asChild>
-            <Link href={`/admin/courses/${courseId}/edit`}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Course
-            </Link>
-          </Button>
-          <Button variant="destructive" onClick={handleDelete}>
-            Delete
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={`Course Details: ${course.name}`}
+        onBack={onBack}
+        actions={[
+          {
+            label: 'Edit',
+            onClick: onEdit,
+            variant: 'outline',
+            icon: <Edit className="h-4 w-4" />
+          },
+          {
+            label: 'Delete',
+            onClick: handleDelete,
+            variant: 'destructive',
+            icon: <Trash2 className="h-4 w-4" />
+          }
+        ]}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Main Course Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* Course Header */}
@@ -266,16 +263,12 @@ export function CourseProfile({ courseId }: CourseProfileProps) {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full" asChild>
-                <Link href={`/admin/courses/${courseId}/edit`}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Course
-                </Link>
+              <Button className="w-full" onClick={onEdit}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Course
               </Button>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/admin/courses">
-                  View All Courses
-                </Link>
+              <Button variant="outline" className="w-full" onClick={onBack}>
+                View All Courses
               </Button>
             </CardContent>
           </Card>
