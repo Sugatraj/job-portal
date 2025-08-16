@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { PageHeader } from '@/components/layout/page-header';
 import { 
   Mail, 
   Phone, 
@@ -15,7 +15,8 @@ import {
   Eye,
   MessageSquare,
   CheckCircle,
-  XCircle
+  XCircle,
+  Edit
 } from 'lucide-react';
 import { Candidate } from './candidates-columns';
 
@@ -37,43 +38,48 @@ export function CandidateProfile({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={onBack}>
-          ← Back to Candidates
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onScheduleInterview}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Schedule Interview
-          </Button>
-          <Button onClick={onApprove}>
-            <CheckCircle className="mr-2 h-4 w-4" />
-            Approve
-          </Button>
-          <Button variant="destructive" onClick={onReject}>
-            <XCircle className="mr-2 h-4 w-4" />
-            Reject
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={`Candidate Profile - ${candidate.fullName}`}
+        onBack={onBack}
+        actions={[
+          {
+            label: 'Edit',
+            onClick: () => {}, // TODO: Implement edit functionality
+            variant: 'outline',
+            icon: <Edit className="h-4 w-4" />
+          },
+          {
+            label: 'Schedule Interview',
+            onClick: onScheduleInterview,
+            variant: 'outline',
+            icon: <MessageSquare className="h-4 w-4" />
+          },
+          {
+            label: 'Approve',
+            onClick: onApprove,
+            variant: 'default',
+            icon: <CheckCircle className="h-4 w-4" />
+          },
+          {
+            label: 'Reject',
+            onClick: onReject,
+            variant: 'destructive',
+            icon: <XCircle className="h-4 w-4" />
+          }
+        ]}
+      />
 
-            {/* Basic Info */}
-      <Card className="col-span-4">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">{candidate.fullName}</h2>
-            <Badge variant={candidate.status === 'approved' ? 'default' : candidate.status === 'rejected' ? 'destructive' : 'secondary'}>
-              {candidate.status}
-            </Badge>
-            <Badge variant={candidate.priority === 'high' ? 'destructive' : candidate.priority === 'medium' ? 'default' : 'secondary'}>
-              {candidate.priority} Priority
-            </Badge>
-          </div>
-          {candidate.profileTitle && (
-            <p className="text-muted-foreground text-lg">{candidate.profileTitle}</p>
-          )}
-        </CardHeader>
-      </Card>
+            {/* Profile Summary */}
+      {candidate.profileTitle && (
+        <Card className="col-span-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg text-muted-foreground">Profile Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <p className="text-lg">{candidate.profileTitle}</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Grid Container */}
       <div className="grid grid-cols-4 gap-4">
