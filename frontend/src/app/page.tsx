@@ -55,7 +55,7 @@ export default function Home() {
   ];
 
   return (
-    <PageLayout currentPage="/">
+    <PageLayout>
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/5 to-primary/10 py-20">
         <div className="container mx-auto px-4 text-center">

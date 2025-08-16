@@ -6,18 +6,16 @@ import AppFooter from './AppFooter';
 
 interface PageLayoutProps {
   children: ReactNode;
-  currentPage?: string;
   showFooter?: boolean;
 }
 
 export default function PageLayout({ 
   children, 
-  currentPage, 
   showFooter = true 
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen">
-      <AppHeader currentPage={currentPage} />
+      <AppHeader />
       
       <main className="pt-16">
         {children}

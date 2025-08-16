@@ -3,12 +3,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { GraduationCap } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
-interface AppHeaderProps {
-  currentPage?: string;
-}
-
-export default function AppHeader({ currentPage }: AppHeaderProps) {
+export default function AppHeader() {
+  const pathname = usePathname();
+  
   const navItems = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
@@ -30,19 +29,25 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`text-sm font-medium transition-colors ${
-                  currentPage === item.href 
-                    ? "text-primary" 
-                    : "hover:text-primary"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors relative ${
+                    isActive 
+                      ? "text-primary" 
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
           
           <div className="flex items-center space-x-4">
