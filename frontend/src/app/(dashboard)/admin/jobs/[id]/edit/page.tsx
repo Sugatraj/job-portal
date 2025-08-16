@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/lib/constants';
-import { AddJobForm } from '@/components/jobs/add-job-form';
+import { EditJobForm } from '@/components/jobs/edit-job-form';
 
-export default function AddJobPage() {
+export default function EditJobPage() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -25,7 +25,7 @@ export default function AddJobPage() {
 
   return (
     <div className="w-full">
-      <AddJobForm 
+      <EditJobForm 
         onCancel={handleCancel}
         onSuccess={handleSuccess}
       />
