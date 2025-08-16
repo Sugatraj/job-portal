@@ -384,7 +384,7 @@ export function EditJobForm({
               value={formData.jobType}
               onValueChange={(value: any) => handleInputChange("jobType", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -405,7 +405,7 @@ export function EditJobForm({
               value={formData.workMode}
               onValueChange={(value: any) => handleInputChange("workMode", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -544,7 +544,7 @@ export function EditJobForm({
               value={formData.currency}
               onValueChange={(value: any) => handleInputChange("currency", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -602,7 +602,7 @@ export function EditJobForm({
               value={formData.status}
               onValueChange={(value: any) => handleInputChange("status", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -621,7 +621,7 @@ export function EditJobForm({
               value={formData.priority}
               onValueChange={(value: any) => handleInputChange("priority", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -640,7 +640,7 @@ export function EditJobForm({
               value={formData.shiftTiming}
               onValueChange={(value: any) => handleInputChange("shiftTiming", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
