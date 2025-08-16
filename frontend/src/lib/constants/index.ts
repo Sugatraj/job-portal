@@ -18,6 +18,11 @@ export const APP_CONFIG = {
     },
   } as const;
 
+  // Helper functions for dynamic routes
+  export const getCandidateRoute = (id: string) => `/admin/candidates/${id}`;
+  export const getCandidateEditRoute = (id: string) => `/admin/candidates/${id}/edit`;
+  export const getCandidateViewRoute = (id: string) => `/admin/candidates?id=${id}`;
+
   export const USER_ROLES = {
     ADMIN: 'admin',
     USER: 'user',

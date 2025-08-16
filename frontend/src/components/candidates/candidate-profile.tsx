@@ -22,12 +22,14 @@ interface CandidateProfileProps {
   candidate: Candidate;
   onBack: () => void;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
 export function CandidateProfile({ 
   candidate, 
   onBack,
-  onDelete
+  onDelete,
+  onEdit
 }: CandidateProfileProps) {
   return (
     <div className="space-y-6">
@@ -38,7 +40,7 @@ export function CandidateProfile({
         actions={[
           {
             label: 'Edit',
-            onClick: () => {}, // TODO: Implement edit functionality
+            onClick: onEdit,
             variant: 'outline',
             icon: <Edit className="h-4 w-4" />
           },

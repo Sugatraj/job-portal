@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, getCandidateEditRoute, getCandidateViewRoute } from '@/lib/constants';
 import { DataTable } from '@/components/ui/data-table';
 import { createCandidatesColumns, Candidate } from '@/components/candidates/candidates-columns';
 import { candidatesService } from '@/lib/services/candidatesService';
@@ -17,11 +17,15 @@ import { PageHeader } from '@/components/forms';
 export default function CandidatesPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<'list' | 'profile'>('list');
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const searchParams = useSearchParams();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Get candidate ID from URL query params
+  const candidateId = searchParams.get('id');
+  const viewMode = candidateId ? 'profile' : 'list';
+  const selectedCandidate = candidateId ? candidates.find(c => c.id === candidateId) : null;
 
   useEffect(() => {
     console.log('CandidatesPage: User role:', user?.role);
@@ -57,6 +61,17 @@ export default function CandidatesPage() {
       console.log('CandidatesPage: First candidate sample:', candidates[0]);
     }
   }, [candidates]);
+
+  // Handle URL changes and ensure candidate data is available
+  useEffect(() => {
+    if (candidateId && candidates.length > 0) {
+      const candidate = candidates.find(c => c.id === candidateId);
+      if (!candidate) {
+        console.log('Candidate not found, redirecting to list');
+        router.push(ROUTES.admin.candidates);
+      }
+    }
+  }, [candidateId, candidates, router]);
 
   // Refresh candidates when page gains focus (e.g., returning from add/edit)
   useEffect(() => {
@@ -122,12 +137,12 @@ export default function CandidatesPage() {
 
   const handleViewCandidate = (candidate: Candidate) => {
     console.log('View candidate profile clicked:', candidate);
-    setSelectedCandidate(candidate);
-    setViewMode('profile');
+    router.push(getCandidateViewRoute(candidate.id));
   };
 
   const handleEditCandidate = (candidate: Candidate) => {
-    router.push(`${ROUTES.admin.candidates}/${candidate.id}/edit`);
+    console.log('Edit candidate clicked:', candidate);
+    router.push(getCandidateEditRoute(candidate.id));
   };
 
   const handleDeleteCandidate = (candidate: Candidate) => {
@@ -148,8 +163,7 @@ export default function CandidatesPage() {
   };
 
   const handleBackToList = () => {
-    setViewMode('list');
-    setSelectedCandidate(null);
+    router.push(ROUTES.admin.candidates);
   };
 
   const handleScheduleInterview = (candidate: Candidate) => {
@@ -183,9 +197,8 @@ export default function CandidatesPage() {
       <CandidateProfile
         candidate={selectedCandidate}
         onBack={handleBackToList}
-        onScheduleInterview={() => handleScheduleInterview(selectedCandidate)}
-        onApprove={() => handleApprove(selectedCandidate)}
-        onReject={() => handleReject(selectedCandidate)}
+        onDelete={() => handleDeleteCandidate(selectedCandidate)}
+        onEdit={() => handleEditCandidate(selectedCandidate)}
       />
     );
   }
@@ -198,6 +211,7 @@ export default function CandidatesPage() {
         items={[
           { href: ROUTES.admin.dashboard, label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
           { href: ROUTES.admin.candidates, label: 'Candidates' },
+          ...(selectedCandidate ? [{ href: getCandidateViewRoute(selectedCandidate.id), label: selectedCandidate.fullName }] : []),
         ]}
       />
 
